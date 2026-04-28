@@ -98,12 +98,13 @@ const Header: React.FC<Props> = () => {
                                 {token && <span className='mx-3'>|</span>}
 
                                 <ClockComponent />
-                                <span className='mx-3'>|</span>
+
                             </p>
                         </div>
                     </strong>
 
                     {token && <>
+                        <span className='mx-3'>|</span>
                         <Tooltip target=".logout-icon" style={{ fontSize: 10, whiteSpace: 'nowrap' }} />
                         <div onClick={logout}
                             data-pr-tooltip="Logout"
@@ -111,7 +112,8 @@ const Header: React.FC<Props> = () => {
                             style={{ cursor: 'pointer', display: !token ? 'none' : 'block' }} className='flex logout-icon align-items-center'>
                             <i className="pi pi-sign-out mr-2" style={{ fontSize: '1rem' }}></i><span style={{ fontSize: '0.8rem' }}>{`  Logout`}</span>
                         </div>
-                    </>}
+                    </>
+                    }
 
                 </div>
             </div>
