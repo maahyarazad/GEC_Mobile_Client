@@ -1,0 +1,11 @@
+.banner-list:hover {
+    background-color: #efefef !important;
+    cursor: pointer;
+    color: rgb(218, 135, 19) !important;
+}
+
+.banner-list:active {
+    background-color: #d0d0d0 !important;
+    cursor: pointer;
+    color: rgb(123, 76, 11) !important;
+}

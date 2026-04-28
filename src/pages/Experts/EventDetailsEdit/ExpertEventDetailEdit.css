@@ -1,0 +1,37 @@
+.offer-details {
+    display: flex;
+    justify-content: center;
+}
+
+form {
+    max-width: 720px;
+}
+
+form p {
+    color: var(--red-500);
+}
+
+ul {
+    padding-inline: 0.5rem;
+    margin: 0;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    text-align: left;
+}
+
+.action-buttons--form-group,
+.action-buttons--header-group {
+    display: flex;
+    gap: 18px;
+}
+
+.action-buttons--form-group {
+    flex-direction: column;
+}
+
+.action-buttons--header-group {
+    flex-direction: row-reverse;
+}

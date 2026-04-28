@@ -1,0 +1,27 @@
+
+.p-multiselect-items-wrapper {
+    max-height: 50vh !important;
+}
+
+
+.partner-table-container {
+    height: calc(100vh - 190px) !important;
+}
+
+
+.partner-table-link:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.partner-list .p-dropdown-label{
+    font-size: x-small;
+}
+
+.partner-list .p-multiselect-label{
+    font-size: x-small;
+}
+
+.partner-list .p-multiselect-item {
+    font-size: small;
+}

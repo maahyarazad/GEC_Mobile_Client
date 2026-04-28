@@ -1,0 +1,22 @@
+.header-container {
+    background-color: orange;
+    /* padding: 20px; */
+    
+}
+
+.header-container span {
+    font-weight: 700;
+    background-color: red;
+    
+}
+
+.header-navbar{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 8vh;
+  padding: 12px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  backdrop-filter: blur(6px);
+
+}

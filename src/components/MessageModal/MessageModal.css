@@ -1,0 +1,52 @@
+.overlay-dialog {
+
+    background-color: #00000088;
+    position: absolute;
+    left:0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    animation-name: animateModalOpen;
+    animation-duration: 200ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes animateModalOpen {
+    from {
+        opacity: 0;
+        display: none;
+    }
+
+    to {
+        opacity: 1;
+        display: flex;
+    }
+}
+
+@keyframes animateModalClose {
+    from {
+        opacity: 1;
+        display: flex;
+    }
+
+    to {
+        opacity: 0;
+        display: none;
+    }
+}
+
+.modal-content {
+    background: white;
+    padding: 2em 3em;
+    border-radius: 20px;
+}
+
+.modal-content .close-button{
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}

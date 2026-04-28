@@ -1,0 +1,15 @@
+.partner-detail-container {
+    height: calc(100vh - 350px);
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+    color: #444;
+    border-color: #444;
+    background-color: #e7e7e7;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.partner-breadcrumb {
+    width: calc(50vw - 50px);
+}

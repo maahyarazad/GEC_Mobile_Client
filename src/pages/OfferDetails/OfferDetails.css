@@ -1,0 +1,74 @@
+.half-circle-top {
+    width: 1.4rem;
+    height: 0.7rem;
+    background-color: white;
+    border-radius: 0 0 0.7rem 0.7rem;
+}
+
+.half-circle-bottom {
+    width: 1.4rem;
+    height: 0.7rem;
+    background-color: white;
+    border-radius: 0.7rem 0.7rem 0 0;
+}
+
+.editor-container {
+    height: 320px;
+}
+
+.editor {
+    margin-top: -20px;
+}
+
+.offer-icons {
+    width: 70px;
+    height: 70px;
+}
+
+.offer-details .p-multiselect-label{
+    font-size: small;
+}
+
+.offer-details .p-multiselect-item {
+    font-size: small;
+}
+
+.offer-details .p-dropdown-label{
+    font-size: small;
+}
+
+.offer-details .p-inputnumber-input{
+    font-size: small;
+}
+
+.offer-details .p-inputtext{
+    font-size: small;
+}
+
+.offer-details .p-timepicker{
+    font-size: small;
+    background-color: red;
+}
+
+
+.input-with-button {
+    position: relative;
+}
+
+.input-with-button input {
+    height: 40px;
+}
+
+.input-with-button .input-with-button-buttons {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+}
+
+.input-with-button .input-with-button-buttons button {
+    height: 38px;
+}
+
+.input-with-button .input-with-button-buttons button:last-child {
+    border-radius: 0 6px 6px 0;
+}

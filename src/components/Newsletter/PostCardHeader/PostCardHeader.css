@@ -1,0 +1,17 @@
+.post-card-header {
+    display: flex;
+    gap: 12px;
+    background-color: rgb(240, 240, 240);
+    /* align-items: center; */
+    /* border-bottom: 1px solid #ccc; */
+}
+
+.pill {
+    border-radius: 100px;
+    padding: 6px 16px;
+}
+
+.pill-text {
+    color: black;
+    font-weight: 600;
+}

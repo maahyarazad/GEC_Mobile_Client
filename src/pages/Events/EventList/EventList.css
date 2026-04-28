@@ -1,0 +1,21 @@
+.events-table-container{
+    max-height: calc(100vh - 200px);
+    overflow: scroll;
+}
+
+.events-table-container .p-datatable-tbody {
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.event-item:hover {
+    background-color: #efefef !important;
+    /* cursor: pointer; */
+    color: rgb(218, 135, 19) !important;
+}
+
+.event-item:active {
+    background-color: #d0d0d0 !important;
+    /* cursor: pointer; */
+    color: rgb(123, 76, 11) !important;
+}

@@ -1,0 +1,87 @@
+#applicants-table tbody tr:nth-child(odd) {
+    background-color: #f3f3f3;
+}
+
+#applicants-table th {
+    background-color: rgba(119, 119, 119, 0.2);
+    min-width: 100px;
+    padding: 10px 0px;
+}
+
+#applicants-table {
+    width: 100%;
+    border: 1px solid rgb(192, 192, 192);
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 4px 4px 5px rgb(202, 202, 202);
+}
+
+#applicants-table .message {
+    /* width: 10px; */
+    width: 45%;
+    max-width: 100px;
+}
+
+#applicants-table .name {
+    min-width: 300px;
+}
+
+#applicants-table .phone {
+    min-width: 200px;
+}
+
+#applicants-table .email {
+    min-width: 400px;
+}
+
+#applicants-table tbody td {
+    padding: 10px;
+}
+
+#applicants-table tbody td:first-child {
+    text-align: center;
+}
+
+#applicants-table tbody td:nth-child(6) {
+    text-align: center;
+    padding: 30px 20px; 
+}
+
+#applicants-table a {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: black;
+    text-decoration-color: black;
+    border: 1px solid rgba(0,0,0,0.2);
+    box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+}
+
+#applicants-table a:hover{
+    cursor: pointer;
+    background-color: rgb(231, 231, 231);
+}
+
+#applicants-table a:active{
+    cursor: pointer;
+    background-color: rgb(200, 200, 200);
+}
+
+#applicants-table a:visited{
+    cursor: pointer;
+    background-color: rgb(201, 240, 209);
+}
+
+#applicants-table a:visited:hover{
+    cursor: pointer;
+    background-color: rgb(180, 211, 186);
+}
+
+#applicants-table .rating-group {
+    display: flex;
+}
+
+#applicants-table .rating-group button {
+    width: initial;
+}

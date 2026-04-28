@@ -1,0 +1,9 @@
+DirectoryIndex index.php
+
+RewriteEngine On
+RewriteBase /admin/application/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule . /admin/application/index.php [L]

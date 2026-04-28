@@ -1,0 +1,6 @@
+.push-recipients-search .p-overlaypanel-content {
+    padding: 0px !important;
+}
+.test-recipients-table {
+    max-height: 100px !important
+}

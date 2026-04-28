@@ -1,0 +1,194 @@
+
+
+body {
+  margin: 0;
+  font-family:  'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root{
+  /* your brand color */
+  --primary: rgb(43, 44, 56);
+
+  /* PrimeReact / PrimeFlex commonly used names (cover both variants) */
+  --primary-color: var(--primary);
+  --primary-color-text: #fff;
+
+  --p-primary-color: var(--primary);
+  --p-primary-contrast-color: #fff;
+
+  /* safer hover/active fallbacks */
+  --primary-color-hover: color-mix(in srgb, var(--primary) 85%, black);
+  --p-primary-hover-color: color-mix(in srgb, var(--primary) 85%, black);
+  --primary-color-active: color-mix(in srgb, var(--primary) 75%, black);
+  --p-primary-active-color: color-mix(in srgb, var(--primary) 75%, black);
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.avatar-img {
+  /* width: 4rem; */
+  /* height: 4rem; */
+  border-radius: 100px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+
+}
+
+.page-container {
+  padding: 1.5rem;
+}
+
+
+:root {
+  --primary: rgb(43, 44, 56);
+}
+
+  .custom-tooltip {
+    max-width: 300px !important;
+    white-space: normal !important; /* allow wrapping */
+    word-wrap: break-word;
+    
+    
+  }
+  .custom-target-icon {
+    transform: scale(0.7);
+  }
+
+  .p-overlay-badge .p-badge {
+  display: none !important;
+
+}
+
+/* 👇 all overrides scoped under .app-theme */
+.app-theme {
+
+  /* Limit tooltip width */
+
+  /* Default PrimeReact button (not success/danger/info/etc. and no bg- class) */
+  .p-button.p-component:not(.p-button-success):not(.p-button-danger):not(.p-button-info):not(.p-button-help):not(.p-button-warning):not(.p-button-secondary):not([class*="bg-"]) {
+    background-color: var(--primary) ;
+    border-color: var(--primary) ;
+    color: #fff ;
+    /* transform: scale(0.85); */
+  }
+
+  /* Outlined buttons only */
+  .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-info):not(.p-button-help):not(.p-button-warning):not(.p-button-secondary):not([class*="bg-"]) {
+    color: var(--primary) ;
+    border-color: var(--primary) ;
+    background: transparent ;
+  }
+
+  /* Outlined hover state */
+  .p-button.p-button-outlined:not(.p-button-success):not(.p-button-danger):not(.p-button-info):not(.p-button-help):not(.p-button-warning):not(.p-button-secondary):not([class*="bg-"]):hover {
+    background: var(--primary) ;
+    color: #fff;
+  }
+
+  /* ✅ “Selected” state */
+  .p-button.selected,
+  .selected {
+    color: var(--primary) ;
+    background-color: rgb(216, 213, 213) ;
+    border-color: var(--primary) ;
+  }
+
+  /* InputSwitch ON color */
+  .p-inputswitch.p-highlight .p-inputswitch-slider {
+    background-color: var(--primary) ;
+  }
+
+  /* Checkbox checked box */
+  .p-checkbox.p-highlight .p-checkbox-box,
+  .p-checkbox.p-checkbox-checked .p-checkbox-box {
+    background: var(--primary) ;
+    border-color: var(--primary) ;
+  }
+  
+}
+
+
+/* 
+.custom-view-button {
+  background-color: var(--primary)!important;
+  color: #fff !important;
+  border: none !important;
+  transform: scale(0.85);
+}
+
+.custom-view-button:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.custom-view-button:hover {
+  color:  var(--primary) !important;
+  background-color: rgb(216, 213, 213)  !important;
+}
+
+
+.p-inputswitch.p-highlight .p-inputswitch-slider,
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background-color: var(--primary) !important; 
+}
+
+
+.p-inputswitch .p-inputswitch-slider {
+  background-color: #d0d5d9 !important;
+} */
+
+
+/* 
+.p-button.p-component.p-button-sm {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+.p-button.p-component.p-button-sm:hover {
+  background-color: color-mix(in srgb, var(--primary) 85%, black) !important;
+  border-color: color-mix(in srgb, var(--primary) 85%, black) !important;
+  color: #fff !important;
+}
+
+.p-button.p-component.p-button-sm:focus,
+.p-button.p-component.p-button-sm:active {
+  box-shadow: none !important;
+  background-color: color-mix(in srgb, var(--primary) 75%, black) !important;
+  border-color: color-mix(in srgb, var(--primary) 75%, black) !important;
+  outline: none !important;
+}
+
+
+.p-button.p-button-outlined.p-button-sm {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  background: transparent !important;
+}
+
+.p-button.p-button-outlined.p-button-sm:hover {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+
+
+.p-button:disabled,
+.p-button.p-disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed;
+} */
+
+.active-row {
+  background-color: #efffef !important; /* light red */
+  
+}

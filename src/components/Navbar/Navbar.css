@@ -1,0 +1,33 @@
+
+.navbar > ul {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-list {
+    padding: 15px;
+    text-decoration: none;
+}
+
+.nav-list:hover {
+    background-color: #bbb;
+    cursor: pointer;
+}
+
+.p-sidebar .p-sidebar-content {
+    padding: 0
+}
+
+.navbar-header { 
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 30px 15px;
+    font-weight: 700;
+    
+}
+
+.links {
+    text-decoration: none;
+    color: #333;
+}

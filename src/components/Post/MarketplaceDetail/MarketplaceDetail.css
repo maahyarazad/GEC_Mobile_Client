@@ -1,0 +1,25 @@
+.marketplace-thumbnail {
+width: 10px;
+aspect-ratio: 1;
+}
+
+.p-link {
+   z-index: 1
+}
+
+.p-galleria .p-galleria-item-nav {
+    background: #00000066
+}
+.p-galleria .p-galleria-item-nav:not(.p-disabled):hover {
+    background: #000000aa
+
+}
+
+
+.mode-offer {
+    background-color: #f0932b;
+}
+
+.mode-search {
+    background-color: #436885;
+}

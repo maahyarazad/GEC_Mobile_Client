@@ -1,0 +1,13 @@
+.pressable:hover {
+    cursor: pointer;
+    color: #aaa !important;
+}
+
+.offer-list .p-dropdown-label{
+    font-size: small;
+}
+
+.offer-table-container {
+    height: calc(100vh - 320px) !important;
+}
+

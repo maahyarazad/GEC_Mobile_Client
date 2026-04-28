@@ -1,0 +1,38 @@
+.p-component .p-button-success:disabled, .p-button-success[disabled]  {
+  background-color: rgb(115, 215, 147);
+  border-color: rgb(115, 215, 147)
+}
+
+.p-component .p-button-danger:disabled, .p-button-danger[disabled]  {
+  background-color: rgb(221, 134, 134);
+  border-color: rgb(221, 134, 134);
+}
+
+.p-component .p-button-secondary:disabled, .p-button-secondary[disabled]  {
+  background-color: rgb(176, 176, 176);
+  border-color: rgb(176, 176, 176);
+}
+
+html {
+  height: 100%
+}
+
+body {
+  height: 100%;
+}
+
+.hover-cursor-pointer:hover,
+.hover-cursor-pointer:hover * {
+  cursor: pointer;
+}
+
+/* Highlight rows in blue */
+.highlight-row {
+  background-color: #e3f2fd !important; /* light blue */
+  color: #0d47a1 !important;            /* dark blue text */
+}
+
+/* Optional hover effect */
+.highlight-row:hover {
+  background-color: #bbdefb !important;
+}

@@ -1,0 +1,67 @@
+.half-circle-top {
+    width: 1.4rem;
+    height: 0.7rem;
+    background-color: white;
+    border-radius: 0 0 0.7rem 0.7rem;
+}
+
+.half-circle-bottom {
+    width: 1.4rem;
+    height: 0.7rem;
+    background-color: white;
+    border-radius: 0.7rem 0.7rem 0 0;
+}
+
+.ticket-cut {
+    border-right: 2px dashed white;
+    margin-left: 90px;
+}
+
+.offer-preview-width{
+    width: 300px;
+}
+
+.ribbon-container {
+   position: absolute;
+   z-index: 5; 
+   margin-top: 10px;
+}
+
+.ribbon {
+    width: 70px;
+    height: 18px;
+    position: relative;
+    display: flex;
+}
+
+.ribbon-content {
+	background: red;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+.ribbon-ends {
+	width: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1 solid white;
+}
+
+.ribbon-ends > div:first-child {
+    border-left: 0px solid transparent;
+	border-right: 9px solid transparent;
+	border-top: 9px solid red;
+    /* outline: white solid 1px; */
+}
+
+.ribbon-ends > div:last-child {
+    border-left: 0px solid transparent;
+	border-right: 9px solid transparent;
+	border-bottom: 9px solid red;
+}
