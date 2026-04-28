@@ -23,6 +23,7 @@ jobs:
 
       - name: Build client
         env:
+          CI: false
           REACT_APP_API_URL: 'https://www.german-emirates-club.com/api'
           REACT_APP_PROXY: '/admin/application'
           REACT_APP_NODE_MODE: prod
