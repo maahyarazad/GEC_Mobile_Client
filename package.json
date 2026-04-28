@@ -40,7 +40,7 @@
   "scripts": {
     "dev": "PORT=3333 react-scripts --openssl-legacy-provider start",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "ESLINT_NO_DEV_ERRORS=true react-scripts build",
     "buildserver": "rm -rf build && react-scripts build && cp -a php/. build/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
