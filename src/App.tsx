@@ -18,7 +18,6 @@ function App() {
       basename={process.env.REACT_APP_PROXY}
     >
       <div className="App app-theme" style={{ height: "100vh" }}>
-        
           <Main />
       </div>
     </HistoryRouter>
