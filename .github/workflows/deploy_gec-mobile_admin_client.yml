@@ -1,0 +1,59 @@
+name: Deploy GEC Mobile Admin Client
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy-client:
+    name: Build & Deploy Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build client
+        env:
+          REACT_APP_API_URL: 'https://www.german-emirates-club.com/api'
+          REACT_APP_PROXY: '/admin/application'
+          REACT_APP_NODE_MODE: prod
+        run: npm run build
+      
+      - name: Copy PHP files into build
+        run: cp -a php/. build/
+        
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Clear old public files on server
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no \
+            -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "rm -rf ~/buenapublica/german-emirates-club.com/admin/gec-app-cms/build/* && echo 'Cleared old files'"
+      - name: Upload new build to server
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no \
+            -P ${{ secrets.SSH_PORT }} -r build/* \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/buenapublica/german-emirates-club.com/admin/gec-app-cms/build/
+      - name: Verify deployment
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no \
+            -p ${{ secrets.SSH_PORT }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "ls -la ~/buenapublica/german-emirates-club.com/admin/gec-app-cms/build/"
