@@ -1,5 +1,4 @@
 import { IAdminRelease } from "../../@types/AdminRelease";
-import { IPCategory } from "../../@types/Partner";
 import { StorageServiceType } from "../../@types/Storage";
 import { config } from "../../utils/constants/constants";
 import { history } from "../../utils/history/history";
@@ -21,34 +20,28 @@ export const StorageService: StorageServiceType = {
     },
     storeRole(roles) {
         
-        // when user have no read to at least one app, logout user
         let hasReadAccessToAnyApps = false
         let rolesArr = JSON.parse(roles)
-        hasReadAccessToAnyApps = rolesArr.find((role: IAdminRelease)  => role.r === '1') 
+        hasReadAccessToAnyApps = rolesArr.find((role: IAdminRelease) => role.r === '1') 
         if (!hasReadAccessToAnyApps) {
             StorageService.removeToken();
             history.replace(`${process.env.REACT_APP_PROXY}/session-expired`)
             alert("You do not have any access to App Admin")
             return;
-        }
-        else {
+        } else {
             localStorage.setItem('roles', roles.toString())
         }
     },
     retrieveRoles() {
         let roles = localStorage.getItem('roles')
 
-        // logout user
         if (!roles) {
             async function fetchRoles () {
-                // try to fetch again user roles
                 const fetchedRoles = await AuthService.roles()
 
-                // logout user if still user still has no user role
                 if (!fetchedRoles) {
                     StorageService.removeToken();
                     StorageService.removeRoles();
-                    history.replace(`${process.env.REACT_APP_PROXY}/session-expired`)
                     history.replace(`${config.MODE === 'dev' ? '' : '/admin/application'}/session-expired`)
                     return;
                 }
@@ -58,12 +51,10 @@ export const StorageService: StorageServiceType = {
             fetchRoles()
             return null;
         } else {
-            // has at least 1 READ access
             let hasAtLeastOne = false
-            hasAtLeastOne = JSON.parse(roles).find((role: IAdminRelease) => role.r == '1')
+            hasAtLeastOne = JSON.parse(roles).find((role: IAdminRelease) => role.r === '1')
             hasAtLeastOne = !!hasAtLeastOne
 
-            // logout user if still user still has no user role
             if (!hasAtLeastOne) {
                 StorageService.removeToken();
                 StorageService.removeRoles();
@@ -82,29 +73,19 @@ export const StorageService: StorageServiceType = {
         if (!rolesStr) return false;
 
         const localStorageRoles = JSON.parse(rolesStr);
-        const localStorageRole = localStorageRoles?.find((role: IAdminRelease) => role.appId == appId)
+        const localStorageRole = localStorageRoles?.find((r: IAdminRelease) => r.appId === appId)
         if (!localStorageRole) return false;
 
         switch(role) {
-            case 'read': return localStorageRole.r == '1';
-                break;
-            case 'add': return localStorageRole.w == '1';
-                break;
-            case 'edit': return localStorageRole.e == '1';
-                break;
-            case 'delete': return localStorageRole.d == '1';
-                break;
-            case 'status': return localStorageRole.s == '1';
-                break;
-            default:
-                return false;
-
+            case 'read':   return localStorageRole.r === '1';
+            case 'add':    return localStorageRole.w === '1';
+            case 'edit':   return localStorageRole.e === '1';
+            case 'delete': return localStorageRole.d === '1';
+            case 'status': return localStorageRole.s === '1';
+            default:       return false;
         }
     },
 
-    /***** helpers to centralize data - START *****/
-
-    // Partner Categories and Prospect Categories
     fetchPartnerCategories() {
         const STORAGE_KEY = 'partner-categories';
 
@@ -118,7 +99,4 @@ export const StorageService: StorageServiceType = {
         const STORAGE_KEY = 'partner-categories';
         return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '')
     }
-
-    /***** helpers to centralize data - END *****/
-
 }
