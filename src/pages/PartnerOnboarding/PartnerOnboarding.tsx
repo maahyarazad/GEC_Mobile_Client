@@ -76,7 +76,7 @@ export default function PartnerOnboarding() {
     const [first, setFirst] = useState(0);
     const [rows, setRows] = useState(25);
     const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 25, total: 0, totalPages: 0 });
-    const [globalFilter, setGlobalFilter] = useState('');
+    
     const [filters, setFilters] = useState<DataTableFilterMeta>(EMPTY_FILTERS);
     const [sortField, setSortField] = useState('id');
     const [sortOrder, setSortOrder] = useState<1 | -1>(1);
@@ -201,27 +201,32 @@ export default function PartnerOnboarding() {
         }
     }, []);
 
-    const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const onSearch = (value: string) => {
-        setGlobalFilter(value);               // update input instantly (no lag while typing)
+const onSearch = (value: string) => {
+    // ✅ Keep the global filter value inside the filters object
+    debugger;
+    setFilters(prev => ({
+        ...prev,
+        global: { value, matchMode: FilterMatchMode.CONTAINS },
+    }));
 
-        if (searchDebounceRef.current) {
-            clearTimeout(searchDebounceRef.current);
-        }
+    // if (searchDebounceRef.current) {
+    //     clearTimeout(searchDebounceRef.current);
+    // }
 
-        searchDebounceRef.current = setTimeout(() => {
-            setFirst(0);
-            fetchData();
-        }, 400);                              // 400ms is the sweet spot — responsive but not spammy
-    };
+    // searchDebounceRef.current = setTimeout(() => {
+    //     setFirst(0);
+    //     fetchData();
+    // }, 400);
+};
 
     // cleanup on unmount
-    useEffect(() => {
-        return () => {
-            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    //     };
+    // }, []);
 
 
 
@@ -328,7 +333,7 @@ export default function PartnerOnboarding() {
 
 
     const clearFilters = () => {
-        setGlobalFilter('');
+        
         setFilters(EMPTY_FILTERS);
         setFirst(0);
         setSortField('id');
@@ -423,7 +428,7 @@ export default function PartnerOnboarding() {
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search" />
                 <InputText
-                    value={globalFilter}
+                  value={(filters.global as { value: string | null; matchMode: string }).value ?? ''}
                     onChange={(e) => onSearch(e.target.value)}
                     placeholder="Search partners…"
                     style={{ width: '22rem' }}
@@ -589,8 +594,8 @@ export default function PartnerOnboarding() {
                 onSort={onSort}
                 scrollable
                 scrollHeight="70dvh"
-                globalFilter={globalFilter}
-                globalFilterFields={['title', 'phone', 'email', 'web', 'hotline', 'notice']}
+                globalFilterFields={['group_name', 'phone', 'email', 'type', 'status']}
+                // globalFilter={globalFilter}
                 emptyMessage="No partners found"
             >
                 <Column field="id" header="ID" sortable style={{ minWidth: 70 }} />
