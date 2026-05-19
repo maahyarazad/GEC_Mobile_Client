@@ -42,7 +42,7 @@ export default function GroupedContactListPanel({ visible, onHide, data, loading
             header={
                 <div className="flex align-items-center gap-3 w-full">
                    <span style={{ color: '#2B2C39', fontSize: '1.4rem', fontWeight: 600 }}>
-                        Grouped Partner Contact List
+                        Active Partner Contact List
                     </span>
                     <IconField iconPosition="left" style={{ marginLeft: 'auto' }}>
                         <InputIcon className="pi pi-search" />
@@ -83,13 +83,13 @@ export default function GroupedContactListPanel({ visible, onHide, data, loading
                         <div style={{ overflowY: 'auto', flex: 1 }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                                 <thead>
-                                    <tr style={{ background: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Group</th>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Subsidiaries</th>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Full Name</th>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Division</th>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Emails</th>
-                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#f5f5f5', zIndex: 1 }}>Email Count</th>
+                                    <tr style={{ background: '#2B2C39',color: '#ffffff' , borderBottom: '2px solid #ddd' }}>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Group</th>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Subsidiaries</th>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Full Name</th>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Division</th>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Emails</th>
+                                        <th style={{ ...thStyle, position: 'sticky', top: 0, background: '#2B2C39', zIndex: 1 }}>Email Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
