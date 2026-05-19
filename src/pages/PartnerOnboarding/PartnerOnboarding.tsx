@@ -20,7 +20,8 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Editor } from 'primereact/editor';
 
 // ── Types ──────────────────────────────────────────────────────────────────
-import { WebPartner, PartnerContact, Pagination } from './DTO_Interfaces';
+import { WebPartner, PartnerContact, Pagination, GroupedPartnerContact } from './DTO_Interfaces';
+import GroupedContactListPanel from './GroupedContactListPanel';
 import './PartnerOnboarding.css';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -79,6 +80,12 @@ export default function PartnerOnboarding() {
     const [checkedTestMode, setCheckedTestMode] = useState(true);
     const [addRemark, setAddRemark] = useState(false);
     const [remark, setRemark] = useState<any>('');
+
+    // ── Grouped contact list panel state ──────────────────────────────────
+
+    const [showGroupedPanel, setShowGroupedPanel] = useState(false);
+    const [groupedData, setGroupedData] = useState<GroupedPartnerContact[]>([]);
+    const [loadingGroupedData, setLoadingGroupedData] = useState(false);
 
     // ── Dialog / email state ───────────────────────────────────────────────
 
@@ -151,6 +158,22 @@ export default function PartnerOnboarding() {
             console.error('Failed to fetch contacts:', err);
         } finally {
             setLoadingFetchContacts(false);
+        }
+    }, []);
+
+    const fetchGroupedData = useCallback(async () => {
+        setLoadingGroupedData(true);
+        setShowGroupedPanel(true);
+        try {
+            const response = await axiosInstance.get(`${SERVER_BASE_URL}/partners/onboarding/grouped-data`);
+            if (response.status === 200) {
+                
+                setGroupedData(response.data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch grouped contact data:', err);
+        } finally {
+            setLoadingGroupedData(false);
         }
     }, []);
 
@@ -329,14 +352,23 @@ export default function PartnerOnboarding() {
                     style={{ width: '22rem' }}
                 />
             </IconField>
-            <Button
-                type="button"
-                icon="pi pi-filter-slash"
-                label="Clear filters"
-                outlined
-                size="small"
-                onClick={clearFilters}
-            />
+            <div className="flex gap-2">
+                <Button
+                    type="button"
+                    icon="pi pi-users"
+                    label="Grouped Contact List"
+                    size="small"
+                    onClick={fetchGroupedData}
+                />
+                <Button
+                    type="button"
+                    icon="pi pi-filter-slash"
+                    label="Clear filters"
+                    outlined
+                    size="small"
+                    onClick={clearFilters}
+                />
+            </div>
         </div>
     );
 
@@ -605,6 +637,12 @@ export default function PartnerOnboarding() {
                     </Dialog>
                 </>
             )}
+            <GroupedContactListPanel
+                visible={showGroupedPanel}
+                onHide={() => setShowGroupedPanel(false)}
+                data={groupedData}
+                loading={loadingGroupedData}
+            />
             <Toast ref={toastRef} position="bottom-right" />
         </>
     );

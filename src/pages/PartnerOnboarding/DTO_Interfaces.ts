@@ -49,3 +49,13 @@ export interface Pagination {
     total: number;
     totalPages: number;
 }
+
+export interface GroupedPartnerContact {
+   
+    group_name: string;
+    subsidiaries: string;
+    email_count : number;
+    fullname: string;
+    emails: string;
+    divions: string;
+}
