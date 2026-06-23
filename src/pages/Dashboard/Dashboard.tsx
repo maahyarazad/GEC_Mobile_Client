@@ -3,7 +3,7 @@ import './Dashboard.css'
 import moment from 'moment'
 import { ProgressSpinner } from 'primereact/progressspinner'
 import { axiosInstance } from '../../utils/interceptor/Interceptor'
-
+import { useOutletContext } from "react-router-dom";
 interface IInvitationRecord {
     id: number;
     created_at: string;
@@ -27,6 +27,8 @@ const Dashboard: React.FC = () => {
     const [records, setRecords] = useState<IInvitationRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
+
+
     const SERVER_BASE_URL = process.env.REACT_APP_API_URL;
 
     const fetchInvitationRecords = useCallback(async () => {

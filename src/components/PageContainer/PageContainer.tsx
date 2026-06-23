@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { Navigate, Outlet, Route, Router, Routes, useLocation } from "react-router-dom";
+import React, { useRef, useEffect } from "react";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import ApprovalList from "../../pages/ApprovalList";
 import OfferDetails from "../../pages/OfferDetails";
 import PageNotFound from "../../pages/PageNotFound";
@@ -28,7 +28,6 @@ import GuestList from "../../pages/Events/GuestList";
 import PostList from "../../pages/Posts/PostList";
 import NewsletterList from "../../pages/Newsletters/NewsletterList";
 import NewsletterDetails from "../../pages/Newsletters/NewsletterDetails";
-import { links } from "../Navbar/links";
 import ProspectDetailsEdit from "../../pages/Prospect/ProspectDetailsEdit";
 import ExpertEventDetailEdit from "../../pages/Experts/EventDetailsEdit";
 import ExpertMemberDetailEdit from "../../pages/Experts/MemberDetailsEdit";
@@ -38,88 +37,40 @@ import ExpertGuestsList from "../../pages/Experts/GuestList";
 import PartnerOnboarding from "../../pages/PartnerOnboarding/PartnerOnboarding";
 import Dashboard from "../../pages/Dashboard";
 
-
 interface Props {}
 
 interface ProtectedProp {
   redirectPath?: string;
-  pathname?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedProp> = ({
-  redirectPath = "/login",
-  pathname = '/dashboard'
-}) => {
+const ProtectedRoute: React.FC<ProtectedProp> = ({ redirectPath = "/login" }) => {
   const token = StorageService.retrieveToken();
+
+  useEffect(() => {
+    if (token) {
+      StorageService.fetchPartnerCategories();
+    }
+  }, [token]);
+
   if (!token) {
     return <Navigate to={redirectPath} replace />;
   }
-
-  // consider root path as /requests path
-  // so it can register root as one of the links<INavbarLinks>
-  if (pathname == '/') {
-    pathname = '/dashboard'
-  }
-
-  // // get link<INavbarLinks> base on pathname
-  // let pathnameLink = links.find(link=>link.link==pathname)
-
-  // // check if user is redirecting to a admin_release protected route
-  // if (pathnameLink?.id) {
-
-  //   // check if user has access to the page
-  //   let roles = StorageService.retrieveRoles();
-
-  //   let pathRole = roles.find(role=>role.appId==pathnameLink?.id)
-  //   let hasAccessToPath = !!pathRole
-
-  //   if (pathRole) {
-  //     hasAccessToPath = pathRole.r == '1'
-  //   }
-
-  //   if (!pathRole || !hasAccessToPath) {
-  //     let link
-  //     if (roles.length == 0) {
-  //       alert("You do not have acecss to any App Admin application. Please contact admin.")
-  //       redirectPath = '/login'
-  //     } else {
-  //       console.log('link: ', link)
-  //       // find role with READ
-  //       const nextReadableApp = roles.find(role => role.r == '1')
-  //       if (nextReadableApp) {
-  //         link = links.find(link => link.id === nextReadableApp.appId)
-  //       }
-
-  //     }
-  //     redirectPath = link ? link.link : '/login'
-
-  //     // route to next accessible link
-  //     return <Navigate to={redirectPath} replace />;
-  //   }
-  //   // if has access, ignore and allow to continue
-  // }
-  // fetch other data to store in LocalStorage
-  StorageService.fetchPartnerCategories()
-
 
   return <Outlet />;
 };
 
 //Functional Component
 const PageContainer: React.FC<Props> = () => {
-
-  const location = useLocation();
   const toast = useRef<Toast>(null);
-  
 
   return (
-    <div className="p-0" style={{ flex: 1, overflow: 'auto' }}>
-
+    <div className="p-0" style={{ flex: 1, overflow: "auto" }}>
+      <Toast ref={toast} />
 
       <Routes>
-      
-        <Route element={<ProtectedRoute pathname={location.pathname} />}>
-          <Route index element={<AppList />} />
+        <Route element={<ProtectedRoute />}>
+          {/* Default landing page: send the root path to the dashboard */}
+          <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path={"dashboard"} element={<Dashboard />} />
           <Route path={"apps"}>
             <Route index element={<AppList />} />
@@ -168,31 +119,29 @@ const PageContainer: React.FC<Props> = () => {
           <Route path="guest-list" element={<GuestList />} />
           <Route path={"experts"}>
             <Route index element={<ExpertEventsList />} />
-            <Route path={"detail"} element={<ExpertEventDetailEdit/>} />
-            <Route path={"detail/:eventId"} element={<ExpertEventDetailEdit/>} />
-            <Route path={"guests/:eventId"} element={<ExpertGuestsList/>} />
-            <Route path={"members"} element={<ExpertMemberList/>} />
-            <Route path={"member/detail"} element={<ExpertMemberDetailEdit/>} />
-            <Route path={"member/detail/:memberId"} element={<ExpertMemberDetailEdit/>} />
+            <Route path={"detail"} element={<ExpertEventDetailEdit />} />
+            <Route path={"detail/:eventId"} element={<ExpertEventDetailEdit />} />
+            <Route path={"guests/:eventId"} element={<ExpertGuestsList />} />
+            <Route path={"members"} element={<ExpertMemberList />} />
+            <Route path={"member/detail"} element={<ExpertMemberDetailEdit />} />
+            <Route path={"member/detail/:memberId"} element={<ExpertMemberDetailEdit />} />
           </Route>
           <Route path={"prospects"}>
             <Route index element={<ProspectList />} />
-            <Route path={"new"} element={<ProspectDetailsEdit/>} />
+            <Route path={"new"} element={<ProspectDetailsEdit />} />
           </Route>
           <Route path={"partner-onboarding"}>
             <Route index element={<PartnerOnboarding />} />
-            <Route path={"new"} element={<ProspectDetailsEdit/>} />
+            <Route path={"new"} element={<ProspectDetailsEdit />} />
           </Route>
         </Route>
-
-        <Route path={"*"} element={<PageNotFound />} />
 
         <Route path={"login"} element={<Login />} />
         <Route path={"logout"} element={<Logout />} />
         <Route path={"session-expired"} element={<SessionExpired />} />
-      
-      </Routes>
 
+        <Route path={"*"} element={<PageNotFound />} />
+      </Routes>
     </div>
   );
 };
