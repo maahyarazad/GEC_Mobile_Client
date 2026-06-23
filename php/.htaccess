@@ -1,9 +1,28 @@
+# Disable content negotiation so extensionless nested routes
+# (e.g. /push-notification) aren't intercepted before routing.
+Options -MultiViews
+
 DirectoryIndex index.php
 
-RewriteEngine On
-RewriteBase /admin/application/
-RewriteRule ^index\.php$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-l
-RewriteRule . /admin/application/index.php [L]
+# Primary: route any request that doesn't map to a real file/dir to the SPA
+# entry point. FallbackResource handles arbitrarily nested subpaths reliably
+# (the base route already resolves via DirectoryIndex, but nested routes need
+# this to reach index.php on refresh / deep-link).
+<IfModule mod_dir.c>
+  FallbackResource /admin/application/index.php
+</IfModule>
+
+# Backup: classic mod_rewrite front controller for hosts where
+# FallbackResource is unavailable.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /admin/application/
+
+  # Let the front controller and real files/dirs serve directly.
+  RewriteRule ^index\.php$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # Everything else (including nested subpaths) -> index.php.
+  RewriteRule ^ index.php [L]
+</IfModule>

@@ -19,5 +19,11 @@
       exit();
     }
    
-   readfile("index.html");
+   // Serve the SPA shell. Force HTML so a nested extensionless route
+   // (e.g. /admin/application/push-notification) is always interpreted
+   // correctly, and use an absolute path since index.php may be reached via
+   // an internal rewrite/fallback from a deep route where a relative path
+   // would not resolve reliably.
+   header("Content-Type: text/html; charset=UTF-8");
+   readfile(__DIR__ . "/index.html");
 ?>

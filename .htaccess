@@ -1,0 +1,171 @@
+<IfModule mod_rewrite.c>
+    # Options +FollowSymlinks
+    RewriteEngine On
+    RewriteBase /
+
+    RewriteCond %{SERVER_PORT} ^80$
+    RewriteRule /* https://www.german-emirates-club.com%{REQUEST_URI} [R=301,L]
+
+    # --- GEC App CMS (React SPA mounted at /admin/application) ---------------
+    # Send any /admin/application/* path that is not a real file/dir to the
+    # SPA shell (index.html) so client-side routes resolve on refresh/deep-link.
+    # React Router + ProtectedRoute handle routing and auth, so we serve the
+    # shell directly rather than depending on index.php being deployed.
+    # The explicit index.html exclusion stops the rewrite from re-firing on its
+    # own target, which would otherwise cause an internal-redirect loop (500).
+    RewriteCond %{REQUEST_URI} ^/admin/application/
+    RewriteCond %{REQUEST_URI} !^/admin/application/index\.html$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ /admin/application/index.html [L]
+
+    # RewriteCond %{SERVER_PORT} ^443$
+    # RewriteRule ^(.*)$ http://www.german-emirates-club.com/$1 [R=301,L]
+
+    # RewriteCond %{SERVER_PORT} !^443$
+    # RewriteRule ^Register/([0-9a-z\.]+)$ https://%{HTTP_HOST}/Register/$1 [L]
+
+    # RewriteCond %{HTTP_HOST} ^([^.]+)\.german-emirates-club\.com
+    # RewriteRule ^(.*)$ http://www.german-emirates-club.com/$1 [R=301,L]
+    # RewriteRule ^$ ?sub=%1 [QSA,L]
+##    RewriteCond %{HTTP_HOST} ^german-emirates-club\.com$ [NC]
+##    RewriteRule ^(.*)$ http://www.german-emirates-club.com/$1 [R=301,L]
+
+    ###### nur fuer lokale tests
+    #RewriteCond %{HTTP_HOST} ^german-emirates-club\.local$ [NC]
+    #RewriteRule ^(.*)$ http://www.german-emirates-club.local/$1 [R=301,L]
+
+    # --- Registrierung, Login, Passwort zurücksetzen, Logout
+    RewriteRule ^Register/([0-9a-z\.]+)$ index.php?menu_id=109&registercode=$1 [L]
+    RewriteRule ^Login$ index.php?menu_id=110 [QSA,L]
+    RewriteRule ^Reset$ index.php?menu_id=111 [L]
+    RewriteRule ^Tan/([0-9a-z]+)$ index.php?menu_id=112&tanId=$1 [L]
+    RewriteRule ^Auth/Reset$ index.php?menu_id=120&token=$1 [L]
+    RewriteRule ^Auth/([0-9a-z]+)$ index.php?menu_id=120&token=$1 [L]
+    RewriteRule ^Logout$ logout.php [L]
+
+    RewriteRule ^Error$ index.php?menu_id=115 [QSA,L]
+    RewriteRule ^404$ index.php?menu_id=404&op=404 [L]
+    RewriteRule ^500$ index.php?menu_id=500&op=500 [L]
+
+    ErrorDocument 404 /404
+    ErrorDocument 500 /500
+
+    # --- Newsletter
+    RewriteRule ^Newsletter/([0-9]+)$ index.php?menu_id=117&contentId=$1 [QSA,L]
+    RewriteRule ^Newsletter/Read/(.*)$ index.php?menu_id=119&token=$1 [QSA,L]
+
+    # --- Außenbereich
+    RewriteRule ^Membership$ index.php?menu_id=100 [L]
+    RewriteRule ^Start/Forum$ index.php?menu_id=101 [L]
+    RewriteRule ^Start/Marketplace$ index.php?menu_id=102 [L]
+    RewriteRule ^Committees$ index.php?menu_id=103 [L]
+        RewriteRule ^Committees/([0-9]+)$ index.php?menu_id=2111&id=$1 [L]
+    RewriteRule ^Partner$ index.php?menu_id=104 [QSA,L]
+        RewriteRule ^Partner/([0-9]+)$ index.php?menu_id=104&categoryId=$1 [L]
+            RewriteRule ^Partner/([0-9]+)/([0-9]+)$ index.php?menu_id=1042&partnerId=$2 [L]
+            RewriteRule ^Partner/Search$ index.php?menu_id=1043 [QSA,L]
+    RewriteRule ^Start/Events$ index.php?menu_id=105 [L]
+    RewriteRule ^Media$ index.php?menu_id=106 [QSA,L]
+    RewriteRule ^Contact$ index.php?menu_id=107 [QSA,L]
+    RewriteRule ^Contact/([0-9a-z\.]+)$ index.php?menu_id=107&token=$1 [QSA,L]
+    RewriteRule ^GWC$ index.php?menu_id=209 [L]
+    RewriteRule ^Help$ index.php?menu_id=116 [L]
+    RewriteRule ^gec-events/upcoming/([0-9]+)$ /gec-events/upcoming/index.html [L]
+
+    # --- ACB, Beitrittskriterien
+    RewriteRule ^Terms$ index.php?menu_id=113 [L]
+    RewriteRule ^Criterions$ index.php?menu_id=114 [L]
+
+    # --- Intern
+    RewriteRule ^Profile$ index.php?menu_id=200 [L]
+        RewriteRule ^Profile/([0-9]+)$ index.php?menu_id=200&id=$1 [L]
+        RewriteRule ^Profile/([0-9]+)/(.*)$ index.php?menu_id=200&id=$1&ref=$2 [L]
+            RewriteRule ^Setup$ index.php?menu_id=2001 [L]
+            RewriteRule ^Setup/Invalid$ index.php?menu_id=2002 [L]
+    RewriteRule ^Messages$ index.php?menu_id=201&box=IN [QSA,L]
+        RewriteRule ^Messages/Outbox$ index.php?menu_id=2012&box=OUT [QSA,L]
+        RewriteRule ^Messages/New$ index.php?menu_id=2013 [QSA,L]
+            RewriteRule ^Messages/New/([0-9]+)$ index.php?menu_id=2013&op=new&id=$1 [QSA,L]
+            RewriteRule ^Messages/NewBday/([0-9]+)$ index.php?menu_id=2013&op=new&birthday=1&id=$1 [QSA,L]
+        RewriteRule ^Messages/([0-9]+)$ index.php?menu_id=2014&box=IN&id=$1 [QSA,L]
+        RewriteRule ^Messages/Outbox/([0-9]+)$ index.php?menu_id=2014&box=OUT&id=$1 [QSA,L]
+        RewriteRule ^Messages/Reply/([0-9]+)$ index.php?menu_id=2013&id=$1&op=reply [QSA,L]
+        RewriteRule ^Messages/Forward/([0-9]+)$ index.php?menu_id=2013&id=$1&op=forward [QSA,L]
+    RewriteRule ^Contacts$ index.php?menu_id=202 [QSA,L]
+            RewriteRule ^Contacts/Add/([0-9]+)$ index.php?menu_id=2026&id=$1 [L]
+        RewriteRule ^Contacts/Confirm$ index.php?menu_id=2022 [QSA,L]
+        RewriteRule ^Contacts/Unconfirmed$ index.php?menu_id=2023 [QSA,L]
+        RewriteRule ^Contacts/Bookmark$ index.php?menu_id=2024 [QSA,L]
+        RewriteRule ^Invite$ index.php?menu_id=2025 [L]
+            RewriteRule ^Invite/Status$ index.php?menu_id=2027 [QSA,L]
+            RewriteRule ^Invite/Unsubscribe/([0-9a-z\.]+)$ index.php?menu_id=2029&registercode=$1 [L]
+        RewriteRule ^Interactions$ index.php?menu_id=2028 [QSA,L]
+    RewriteRule ^Search$ index.php?menu_id=203 [L]
+        RewriteRule ^Search/Results$ index.php?menu_id=2031 [QSA,L]
+        RewriteRule ^Search/New$ index.php?menu_id=2033 [QSA,L]
+        RewriteRule ^Search/Visitors$ index.php?menu_id=2034 [QSA,L]
+        RewriteRule ^Search/Visits$ index.php?menu_id=2035 [QSA,L]
+        RewriteRule ^Search/Online$ index.php?menu_id=2036 [QSA,L]
+    RewriteRule ^Forum$ index.php?menu_id=204 [L]
+        RewriteRule ^Forum/Search$ index.php?menu_id=2042 [L]
+            RewriteRule ^Forum/Search/Results$ index.php?menu_id=20421 [QSA,L]
+        RewriteRule ^Forum/New$ index.php?menu_id=2043 [L]
+        RewriteRule ^Forum/Abonnements$ index.php?menu_id=2044 [QSA,L]
+        RewriteRule ^Forum/([0-9]+)$ index.php?menu_id=2045&forum_id=$1 [QSA,L]
+        RewriteRule ^Forum/([0-9]+)/([0-9]+)$ index.php?menu_id=2046&forum_id=$1&article_id=$2 [QSA,L]
+        RewriteRule ^Forum/([0-9]+)/([0-9]+)/Reply$ index.php?menu_id=2047&forum_id=$1&article_id=$2 [L]
+        RewriteRule ^Forum/Terms$ index.php?menu_id=2048 [L]
+    RewriteRule ^Marketplace$ index.php?menu_id=205 [QSA,L]
+            RewriteRule ^Marketplace/Search/Results$ index.php?menu_id=20521 [QSA,L]
+        RewriteRule ^Marketplace/Requests$ index.php?menu_id=205&type=requests [QSA,L]
+        RewriteRule ^Marketplace/New$ index.php?menu_id=2053 [L]
+        RewriteRule ^Marketplace/([0-9]+)$ index.php?menu_id=2055&article_id=$1 [L]
+        RewriteRule ^Marketplace/Terms$ index.php?menu_id=2056 [L]
+        RewriteRule ^Marketplace/My$ index.php?menu_id=2054 [QSA,L]
+        RewriteRule ^Marketplace/Edit/([0-9]+)$ index.php?menu_id=2057&article_id=$1 [L]
+    RewriteRule ^Events$ index.php?menu_id=207 [QSA,L]
+        RewriteRule ^Events/([0-9]+)$ index.php?menu_id=2071&id=$1 [L]
+        RewriteRule ^Events/([0-9]+)/Apply$ index.php?menu_id=2072&id=$1 [L]
+        RewriteRule ^Events/([0-9]+)/([0-9a-z\.]+)$ index.php?menu_id=2074&id=$1&token=$2 [L]
+        RewriteRule ^Events/Gallery$ index.php?menu_id=2073 [L]
+        RewriteRule ^Events/Calendar$ index.php?menu_id=2076 [L]
+    RewriteRule ^Magazine$ index.php?menu_id=208 [QSA,L]
+        RewriteRule ^Magazine/([0-9]+)$ index.php?menu_id=208&categoryId=$1 [QSA,L]
+            RewriteRule ^Magazine/([0-9]+)/([0-9]+)$ index.php?menu_id=2081&categoryId=$1&id=$2 [L]
+            RewriteRule ^Magazine/Search$ index.php?menu_id=2082 [QSA,L]
+            RewriteRule ^Magazine/Archive$ index.php?menu_id=2082&archive=1 [QSA,L]
+            RewriteRule ^Magazine/Specials$ index.php?menu_id=2083 [QSA,L]
+    RewriteRule ^Membercard$ index.php?menu_id=210 [QSA,L]
+        RewriteRule ^Membercard/([1-3])$ index.php?menu_id=2101&package=$1 [L]
+        RewriteRule ^Membercard/([0-9a-z\.]+)$ index.php?menu_id=2102&token=$1 [L]
+        RewriteRule ^Membercard/Billings$ index.php?menu_id=2103 [QSA,L]
+        # RewriteRule ^Membercard/Upgrade$ index.php?menu_id=2104 [L]
+        RewriteRule ^Membercard/Renew$ index.php?menu_id=2105 [L]
+    RewriteRule ^Directory$ index.php?menu_id=212 [QSA,L]
+        RewriteRule ^Directory/Search$ index.php?menu_id=2121 [QSA,L]
+        RewriteRule ^Directory/A-Z$ index.php?menu_id=2122 [L]
+        RewriteRule ^Directory/A-Z_services_and_products$ index.php?menu_id=2125 [L]
+        RewriteRule ^Directory/Map$ index.php?menu_id=2124 [QSA,L]
+        RewriteRule ^Directory/(.*)$ index.php?menu_id=2123&categoryId=$1 [L]
+    RewriteRule ^TV$ /404
+    RewriteRule ^mobile$ index.php?menu_id=214 [L]
+    RewriteRule ^hotline index.php?menu_id=215 [L]
+
+    # --- Feeds
+    RewriteRule ^Magazine/Feed$ feed001.php [L]
+
+    # --- Specials
+    RewriteRule ^wm$ index.php?menu_id=901 [L]
+        RewriteRule ^wm/stadiums$ index.php?menu_id=9011 [L]
+            RewriteRule ^wm/stadiums/([0-9]+)$ index.php?menu_id=9012&id=$1 [L]
+    RewriteRule ^wm/groups$ index.php?menu_id=902 [L]
+    RewriteRule ^wm/magazine$ index.php?menu_id=903 [L]
+        RewriteRule ^wm/magazine/([0-9]+)$ index.php?menu_id=9031&id=$1 [QSA,L]
+    RewriteRule ^wm/teams$ index.php?menu_id=904 [QSA,L]
+    RewriteRule ^wm/dates$ index.php?menu_id=905 [QSA,L]
+    RewriteRule ^wm/tipps$ index.php?menu_id=906 [QSA,L]
+        RewriteRule ^wm/tipps/instructions$ index.php?menu_id=9061 [L]
+        RewriteRule ^wm/tipps/list$ index.php?menu_id=9062 [L]
+        RewriteRule ^wm/tipps/prices$ index.php?menu_id=9063 [L]
+</IfModule>

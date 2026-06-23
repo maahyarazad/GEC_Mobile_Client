@@ -1,0 +1,165 @@
+/* Dashboard — four-section (2x2) layout filling the available height */
+.dashboard-page {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem;
+    overflow: hidden;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1.25rem;
+    height: 100%;
+}
+
+.dashboard-section {
+    min-height: 0; /* allow inner scroll areas to shrink */
+    display: flex;
+}
+
+/* Card */
+.dashboard-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.dashboard-card--placeholder {
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.dashboard-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+.dashboard-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2b2c38;
+    margin: 0 0 0.15rem;
+}
+
+.dashboard-card__subtitle {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.dashboard-card__count {
+    background: #2b2c38;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Scrollable body — grows over time */
+.dashboard-card__body {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 0.5rem 1.25rem;
+}
+
+.dashboard-card__loading,
+.dashboard-card__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Invitation list */
+.invitation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.invitation-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.invitation-item:last-child {
+    border-bottom: none;
+}
+
+.invitation-item__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.invitation-item__group {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2b2c38;
+}
+
+.invitation-item__date {
+    font-size: 0.72rem;
+    color: #6c757d;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.invitation-item__recipients {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.invitation-chip {
+    font-size: 0.72rem;
+    color: #41454f;
+    background: #f1f3f5;
+    border-radius: 6px;
+    padding: 2px 8px;
+    white-space: nowrap;
+}
+
+/* Show all / show less toggle */
+.dashboard-card__toggle {
+    flex-shrink: 0;
+    border: none;
+    border-top: 1px solid #eee;
+    background: #fafafa;
+    color: #2b2c38;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.6rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.dashboard-card__toggle:hover {
+    background: #f0f0f0;
+}
