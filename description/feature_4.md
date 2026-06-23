@@ -1,3 +1,13 @@
+# Feature 4: Use the `useAuth` Hook
+
+## Description
+
+- The `AuthContext` provider has been updated.
+- Replace all direct usages of `AuthContext` with the new `useAuth` hook throughout the application.
+- Ensure all authentication-related functionality continues to work as expected after the refactor.
+- Remove any unused `AuthContext` imports where applicable.
+
+```jsx
 import React, { createContext, useContext, useEffect, useState, FC } from "react";
 import { StorageService } from "../Storage/Storage.service";
 
@@ -34,3 +44,7 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+```
+
+
+

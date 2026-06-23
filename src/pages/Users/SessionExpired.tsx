@@ -1,6 +1,6 @@
 import { ProgressSpinner } from 'primereact/progressspinner'
-import React, { useContext, useEffect } from 'react'
-import { AuthContext } from '../../services/Auth/Auth.context'
+import React, { useEffect } from 'react'
+import { useAuth } from '../../services/Auth/Auth.context'
 import { config } from '../../utils/constants/constants'
 import { history } from '../../utils/history/history'
 
@@ -11,7 +11,7 @@ interface Props {
 //Functional Component
 const SessionExpired: React.FC<Props> = () => {
 
-    const {setToken} = useContext(AuthContext)
+    const {setToken} = useAuth()
 
     useEffect(() => {
       let isMounted = true

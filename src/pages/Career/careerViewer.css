@@ -1,87 +1,155 @@
-#applicants-table tbody tr:nth-child(odd) {
-    background-color: #f3f3f3;
-}
-
-#applicants-table th {
-    background-color: rgba(119, 119, 119, 0.2);
-    min-width: 100px;
-    padding: 10px 0px;
-}
-
-#applicants-table {
-    width: 100%;
-    border: 1px solid rgb(192, 192, 192);
-    padding: 10px;
-    border-radius: 15px;
-    box-shadow: 4px 4px 5px rgb(202, 202, 202);
-}
-
-#applicants-table .message {
-    /* width: 10px; */
-    width: 45%;
-    max-width: 100px;
-}
-
-#applicants-table .name {
-    min-width: 300px;
-}
-
-#applicants-table .phone {
-    min-width: 200px;
-}
-
-#applicants-table .email {
-    min-width: 400px;
-}
-
-#applicants-table tbody td {
-    padding: 10px;
-}
-
-#applicants-table tbody td:first-child {
-    text-align: center;
-}
-
-#applicants-table tbody td:nth-child(6) {
-    text-align: center;
-    padding: 30px 20px; 
-}
-
-#applicants-table a {
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: black;
-    text-decoration-color: black;
-    border: 1px solid rgba(0,0,0,0.2);
-    box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
-}
-
-#applicants-table a:hover{
-    cursor: pointer;
-    background-color: rgb(231, 231, 231);
-}
-
-#applicants-table a:active{
-    cursor: pointer;
-    background-color: rgb(200, 200, 200);
-}
-
-#applicants-table a:visited{
-    cursor: pointer;
-    background-color: rgb(201, 240, 209);
-}
-
-#applicants-table a:visited:hover{
-    cursor: pointer;
-    background-color: rgb(180, 211, 186);
-}
-
-#applicants-table .rating-group {
+/* Page layout — fills the available height so the table can scroll internally */
+.career-page {
     display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
-#applicants-table .rating-group button {
-    width: initial;
+.career-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-shrink: 0;
+}
+
+.career-page__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2b2c38;
+    margin: 0 0 0.2rem;
+}
+
+.career-page__subtitle {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Table wrapper — takes all remaining vertical space */
+.career-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.career-table-wrapper .p-datatable {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.career-table-wrapper .p-datatable-wrapper {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Uniform row height */
+#applicants-table .p-datatable-tbody > tr > td {
+    padding: 0.6rem 0.75rem;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Table header toolbar */
+.career-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.career-table-header__count {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* CV link */
+.cv-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #2b2c38;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+}
+
+.cv-link:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.cv-link:visited {
+    color: #5a6872;
+    background-color: #eaf6ec;
+}
+
+.cv-link:visited:hover {
+    background-color: #d6edd9;
+}
+
+/* View Message button */
+.message-btn.p-button.p-button-text {
+    font-size: 0.78rem;
+    padding: 4px 8px;
+    color: #2b2c38;
+    white-space: nowrap;
+}
+
+.message-btn.p-button.p-button-text:hover {
+    background-color: rgba(43, 44, 56, 0.08);
+}
+
+/* Message modal body */
+.message-modal__body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+/* Rating stars — plain icons, no button wrapper */
+.rating-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rating-star {
+    font-size: 1rem;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.1s ease, transform 0.1s ease;
+    user-select: none;
+}
+
+.rating-star:hover {
+    transform: scale(1.25);
+}
+
+.rating-star--filled {
+    color: #f59e0b;
 }

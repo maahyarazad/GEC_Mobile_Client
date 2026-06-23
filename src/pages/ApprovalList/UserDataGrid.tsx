@@ -110,7 +110,7 @@ const UserDataGrid: React.FC<Props> = ({ }) => {
 
     const renderHeader = () => (
         <div className="flex justify-content-between align-items-center">
-            <h2 className="m-0">Corrputed Records</h2>
+            <h2 className="m-0">Mobile Application Users</h2>
 <div style={{ position: 'relative', display: 'inline-block' }}>
                 <i
                     className="pi pi-search"
@@ -161,7 +161,7 @@ const UserDataGrid: React.FC<Props> = ({ }) => {
         return (
             <>
                 <div className="flex flex-1" style={{ flexDirection: 'column', justifyContent: 'space-between', paddingTop: 10 }}>
-
+                    
                     <span>
                         <small>Creation Date: </small>
                         <strong>
