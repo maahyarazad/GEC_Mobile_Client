@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AuthContext } from '../../../services/Auth/Auth.context';
+import { useAuth } from '../../../services/Auth/Auth.context';
 import { StorageService } from '../../../services/Storage/Storage.service';
 import Cookies from 'js-cookie';
 import './Logout.css'
@@ -12,7 +12,7 @@ interface Props {
 //Functional Component
 const Logout: React.FC<Props> = () => {
     const navigate = useNavigate();
-    const {setToken} = useContext(AuthContext)
+    const {setToken} = useAuth()
 
     useEffect(() => {
       let isMounted = true

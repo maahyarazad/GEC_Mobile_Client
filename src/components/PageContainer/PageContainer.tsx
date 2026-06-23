@@ -112,7 +112,7 @@ const PageContainer: React.FC<Props> = () => {
   
 
   return (
-    <div className="p-0" style={{ height: "calc(100vh - 8vh)" }}>
+    <div className="p-0" style={{ flex: 1, overflow: 'auto' }}>
 
 
       <Routes>

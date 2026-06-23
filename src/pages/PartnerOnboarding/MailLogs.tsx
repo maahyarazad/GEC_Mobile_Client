@@ -37,7 +37,7 @@ interface MailLogsProps {
 
 
 const MailLogs: React.FC<MailLogsProps> = ({ mailLogs }) => {
-    debugger;
+    
     return (
         <div>
 

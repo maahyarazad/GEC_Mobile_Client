@@ -5,7 +5,11 @@ import { history } from "../../utils/history/history";
 import { AuthService } from "../Auth/Auth.service";
 import { PartnerService } from "../Partner/Partner.service";
 
-export const StorageService: StorageServiceType = { 
+// Guards against firing multiple overlapping /admin/roles requests while one is
+// already in flight (retrieveRoles is polled by the Navbar every 500ms).
+let isFetchingRoles = false;
+
+export const StorageService: StorageServiceType = {
     storeToken(token) {
         localStorage.setItem('token', token)
     },
@@ -33,22 +37,42 @@ export const StorageService: StorageServiceType = {
         }
     },
     retrieveRoles() {
+        // Without a token the user is not authenticated; fetching roles would
+        // trigger an unauthenticated /admin/roles request that fails with
+        // "Authentication failed".
+        if (!StorageService.retrieveToken()) {
+            return null;
+        }
+
         let roles = localStorage.getItem('roles')
 
         if (!roles) {
             async function fetchRoles () {
-                const fetchedRoles = await AuthService.roles()
+                try {
+                    const fetchedRoles = await AuthService.roles()
 
-                if (!fetchedRoles) {
+                    if (!fetchedRoles) {
+                        StorageService.removeToken();
+                        StorageService.removeRoles();
+                        history.replace(`${config.MODE === 'dev' ? '' : '/admin/application'}/session-expired`)
+                        return;
+                    }
+                    StorageService.storeRole(JSON.stringify(fetchedRoles.data))
+                } catch (err) {
+                    // A failed roles call must not bubble up as an unhandled
+                    // promise rejection. Treat it as an expired session.
+                    console.error('Failed to fetch roles: ', err)
                     StorageService.removeToken();
                     StorageService.removeRoles();
                     history.replace(`${config.MODE === 'dev' ? '' : '/admin/application'}/session-expired`)
-                    return;
+                } finally {
+                    isFetchingRoles = false;
                 }
-                roles = JSON.stringify(fetchedRoles.data)
-                await StorageService.storeRole(roles)
             }
-            fetchRoles()
+            if (!isFetchingRoles) {
+                isFetchingRoles = true;
+                fetchRoles()
+            }
             return null;
         } else {
             let hasAtLeastOne = false

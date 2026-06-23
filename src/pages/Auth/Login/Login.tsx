@@ -2,10 +2,10 @@ import { Button } from 'primereact/button'
 import { Checkbox } from 'primereact/checkbox'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
-import React, { ChangeEvent, useContext, useState, useEffect, KeyboardEvent } from 'react'
+import React, { ChangeEvent, useState, useEffect, KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ILoginCreds } from '../../../@types/Auth'
-import { AuthContext } from '../../../services/Auth/Auth.context'
+import { useAuth } from '../../../services/Auth/Auth.context'
 import { AuthService } from '../../../services/Auth/Auth.service'
 import { StorageService } from '../../../services/Storage/Storage.service'
 import Cookies from 'js-cookie';
@@ -20,7 +20,7 @@ interface Props {
 const Login: React.FC<Props> = () => {
 
     const navigation = useNavigate();
-    const {setToken} = useContext(AuthContext)
+    const {setToken} = useAuth()
     const [showDialog, setShowDialog] = useState(false)
     const [dialogHeader, setDialogHeader] = useState("")
     const [dialogMsg, setDialogMsg] = useState("")
@@ -52,7 +52,7 @@ const Login: React.FC<Props> = () => {
                 handleMessage(response.data.title, response.data.message)
                 return;
             }
-debugger;
+
             const token = response.data;
             StorageService.storeToken(response.data)
             //@ts-ignore

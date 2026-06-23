@@ -1,18 +1,21 @@
 
 import './Main.css';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import Header from '../components/Header/Header';
 import PageContainer from '../components/PageContainer';
-import { StorageService } from '../services/Storage/Storage.service';
-import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import TitleManager from '../components/TitleManager';
-const Main:FC = () => {
-    
+
+const Main: FC = () => {
     return (
         <TitleManager>
-            <Header />
-            <PageContainer/>
-            
+            <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+                <Navbar />
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                    <Header />
+                    <PageContainer />
+                </div>
+            </div>
         </TitleManager>
     )
 }
