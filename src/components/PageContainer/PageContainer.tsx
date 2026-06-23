@@ -36,6 +36,7 @@ import ExpertMemberList from "../../pages/Experts/MemberList";
 import { Toast } from "primereact/toast";
 import ExpertGuestsList from "../../pages/Experts/GuestList";
 import PartnerOnboarding from "../../pages/PartnerOnboarding/PartnerOnboarding";
+import Dashboard from "../../pages/Dashboard";
 
 
 interface Props {}
@@ -47,7 +48,7 @@ interface ProtectedProp {
 
 const ProtectedRoute: React.FC<ProtectedProp> = ({
   redirectPath = "/login",
-  pathname = '/'
+  pathname = '/dashboard'
 }) => {
   const token = StorageService.retrieveToken();
   if (!token) {
@@ -57,7 +58,7 @@ const ProtectedRoute: React.FC<ProtectedProp> = ({
   // consider root path as /requests path
   // so it can register root as one of the links<INavbarLinks>
   if (pathname == '/') {
-    pathname = '/requests'
+    pathname = '/dashboard'
   }
 
   // // get link<INavbarLinks> base on pathname
@@ -119,6 +120,7 @@ const PageContainer: React.FC<Props> = () => {
       
         <Route element={<ProtectedRoute pathname={location.pathname} />}>
           <Route index element={<AppList />} />
+          <Route path={"dashboard"} element={<Dashboard />} />
           <Route path={"apps"}>
             <Route index element={<AppList />} />
             <Route path={"banners"}>
