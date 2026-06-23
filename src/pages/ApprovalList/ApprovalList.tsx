@@ -595,13 +595,13 @@ const ApprovalList: React.FC<Props> = () => {
                             </span>
                             <InputSwitch checked={viewCorrupted} onChange={(e) => setViewCorrupted(e.value)} />
                         </div>
-                        <div style={{ paddingLeft: 2, paddingRight: 2, display: "flex", alignItems: "center", flexDirection: "column" }}>
+                        {/* <div style={{ paddingLeft: 2, paddingRight: 2, display: "flex", alignItems: "center", flexDirection: "column" }}>
 
                             <span style={{ fontSize: 12, fontWeight: 500 }}>
                                 Users
                             </span>
                             <InputSwitch checked={viewUsers} onChange={(e) => setViewUsers(e.value)} />
-                        </div>
+                        </div> */}
                         <div style={spanStyle}>
 
 
@@ -624,9 +624,7 @@ const ApprovalList: React.FC<Props> = () => {
                         style={{ height: '85dvh', overflow: 'scroll' }}
                     >
 
-                        {viewUsers ? (
-                            <UserDataGrid toastRef={toastRef} />  // your new component
-                        ) : viewCorrupted ? (
+                        {viewCorrupted ? (
 
                             <CorruptedDataGrid toastRef={toastRef} />
 

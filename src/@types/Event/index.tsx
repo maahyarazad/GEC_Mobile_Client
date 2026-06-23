@@ -4,6 +4,7 @@ export interface IEventList {
   eventShortDesc: string;
   eventPlace: string;
   eventTime: Date;
+    eventDescription: string;
 }
 
 export interface IEventDetail {

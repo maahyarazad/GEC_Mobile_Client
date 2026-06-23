@@ -1,21 +1,102 @@
-.events-table-container{
-    max-height: calc(100vh - 200px);
-    overflow: scroll;
-}
-
-.events-table-container .p-datatable-tbody {
-    max-height: 200px;
+/* Event List — clean minimal layout consistent with the Career Viewer page */
+.events-page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
-.event-item:hover {
-    background-color: #efefef !important;
-    /* cursor: pointer; */
-    color: rgb(218, 135, 19) !important;
+.events-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-shrink: 0;
 }
 
-.event-item:active {
-    background-color: #d0d0d0 !important;
-    /* cursor: pointer; */
-    color: rgb(123, 76, 11) !important;
+.events-page__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2b2c38;
+    margin: 0 0 0.2rem;
+}
+
+.events-page__subtitle {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Table wrapper — takes all remaining vertical space */
+.events-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.events-table-wrapper .p-datatable {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.events-table-wrapper .p-datatable-wrapper {
+    flex: 1;
+    min-height: 0;
+}
+
+/* Uniform row height — every cell stays a single line */
+#events-table .p-datatable-tbody > tr > td {
+    padding: 0.6rem 0.75rem;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Table header toolbar */
+.events-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.events-table-header__count {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Short description — truncate to one line, full text via tooltip */
+.event-desc {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: default;
+      color: #2b2c38;
+}
+
+/* Event name link */
+.event-name-link {
+    color: #2b2c38;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.event-name-link:hover {
+    color: rgb(218, 135, 19);
+    text-decoration: underline;
 }
