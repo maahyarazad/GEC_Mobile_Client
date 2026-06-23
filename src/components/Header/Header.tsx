@@ -11,14 +11,14 @@ const Header: React.FC = () => {
 
     return (
         <div className='flex align-items-center p-2 justify-content-between header-navbar' style={{ backgroundColor: '#2b2c38' }}>
-            <div className='flex align-items-center'>
+            <div className={`flex align-items-center ${token ? "" : "pl-3" }`}>
                 <img src={logo} height={50} />
                 <div className='flex flex-column pl-3'>
                     <span className='text-white p-0 pb-1'><strong>{config.APP_NAME}</strong></span>
                     <span className='text-white p-0' style={{ fontSize: 10 }}>Admin Area</span>
                 </div>
             </div>
-            <div className='flex align-items-center' style={{ color: 'white', fontWeight: 300, fontSize: '0.8rem' }}>
+            <div className='flex align-items-center' style={{ color: 'white', fontWeight: 400, fontSize: '0.85rem' }}>
                 {token && <span className='pr-3'>Logged in as <strong>{user}</strong></span>}
                 {token && <span className='mx-3'>|</span>}
                 <ClockComponent />
