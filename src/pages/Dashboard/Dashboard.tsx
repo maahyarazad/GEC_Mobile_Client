@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import './Dashboard.css'
 import moment from 'moment'
 import { ProgressSpinner } from 'primereact/progressspinner'
@@ -9,6 +9,13 @@ interface IInvitationRecord {
     created_at: string;
     recipient: string; // JSON-encoded array of email strings
     group_name: string;
+}
+
+// A record returned by the sync-stat endpoint; `partner` is the partner name
+// and `total_records` is the number of synced records for that partner.
+interface ISyncRecord {
+    partner: string;
+    total_records: number;
 }
 
 const DEFAULT_VISIBLE = 3;
@@ -23,8 +30,22 @@ const parseRecipients = (recipient: string): string[] => {
     }
 };
 
+// Mirror of the backend normalization used to compare partner names:
+//   REPLACE(... lower(trim(partner)) ..., umlauts -> ascii, 'ß' -> 'ss')
+// lower-casing already maps 'Ü' -> 'ü' etc., so only lowercase forms remain.
+const normalizePartner = (partner: string): string =>
+    (partner ?? '')
+        .trim()
+        .toLowerCase()
+        .replace(/ü/g, 'u')
+        .replace(/ö/g, 'o')
+        .replace(/ä/g, 'a')
+        .replace(/ß/g, 'ss');
+
 const Dashboard: React.FC = () => {
     const [records, setRecords] = useState<IInvitationRecord[]>([]);
+    // Normalized partner name -> total_records reported by the sync-stat endpoint.
+    const [syncedCounts, setSyncedCounts] = useState<Map<string, number>>(new Map());
     const [loading, setLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
 
@@ -32,10 +53,9 @@ const Dashboard: React.FC = () => {
     const SERVER_BASE_URL = process.env.REACT_APP_API_URL;
 
     const fetchInvitationRecords = useCallback(async () => {
-        setLoading(true);
         try {
             const response = await axiosInstance.get(`${SERVER_BASE_URL}/partners/onboarding/invitation-records`);
-            
+
             if (response.status === 200) {
                 const data: IInvitationRecord[] = response.data.data ?? [];
                 // latest first
@@ -46,16 +66,46 @@ const Dashboard: React.FC = () => {
             }
         } catch (err) {
             console.error('Failed to fetch invitation records:', err);
-        } finally {
-            setLoading(false);
+        }
+    }, [SERVER_BASE_URL]);
+
+    const fetchSyncStat = useCallback(async () => {
+        try {
+            const response = await axiosInstance.get(`${SERVER_BASE_URL}/partners/onboarding/sync-stat`);
+
+            if (response.status === 200) {
+                // The payload is nested: { data: { status, data: [...] }, status }.
+                const data: ISyncRecord[] =
+                    response.data?.data?.data ?? response.data?.data ?? [];
+
+                // Map each normalized partner name to its total_records value.
+                const counts = new Map<string, number>();
+                (Array.isArray(data) ? data : []).forEach(record => {
+                    counts.set(normalizePartner(record.partner), record.total_records);
+                });
+                setSyncedCounts(counts);
+            }
+        } catch (err) {
+            console.error('Failed to fetch sync stat:', err);
         }
     }, [SERVER_BASE_URL]);
 
     useEffect(() => {
-        fetchInvitationRecords();
-    }, [fetchInvitationRecords]);
+        setLoading(true);
+        Promise.all([fetchInvitationRecords(), fetchSyncStat()]).finally(() => setLoading(false));
+    }, [fetchInvitationRecords, fetchSyncStat]);
 
     const visibleRecords = showAll ? records : records.slice(0, DEFAULT_VISIBLE);
+
+    // Badge count: synced partners that match an invitation record's group_name.
+    const matchedSyncedCount = useMemo(() => {
+        const invitationPartners = new Set(records.map(r => normalizePartner(r.group_name)));
+        let matches = 0;
+        syncedCounts.forEach((_, partner) => {
+            if (invitationPartners.has(partner)) matches += 1;
+        });
+        return matches;
+    }, [records, syncedCounts]);
 
     const renderInvitationPanel = () => (
         <div className="dashboard-card">
@@ -64,7 +114,12 @@ const Dashboard: React.FC = () => {
                     <h3 className="dashboard-card__title">Partner Onboarding Invitations</h3>
                     <span className="dashboard-card__subtitle">Latest invitation email records</span>
                 </div>
-                <span className="dashboard-card__count">{records.length}</span>
+                <div className="dashboard-card__counts">
+                    <span className="dashboard-card__count" title="Invitation records">{records.length}</span>
+                    <span className="dashboard-card__count dashboard-card__count--synced" title="Matched synced partners">
+                        {matchedSyncedCount}
+                    </span>
+                </div>
             </div>
 
             <div className="dashboard-card__body">
@@ -78,10 +133,25 @@ const Dashboard: React.FC = () => {
                     <ul className="invitation-list">
                         {visibleRecords.map(record => {
                             const recipients = parseRecipients(record.recipient);
+                            const partnerSyncCount = syncedCounts.get(normalizePartner(record.group_name)) ?? 0;
+                            const isSynced = partnerSyncCount > 0;
                             return (
-                                <li key={record.id} className="invitation-item">
+                                <li
+                                    key={record.id}
+                                    className={`invitation-item${isSynced ? ' invitation-item--synced' : ''}`}
+                                >
                                     <div className="invitation-item__top">
-                                        <span className="invitation-item__group">{record.group_name}</span>
+                                        <span className="invitation-item__group">
+                                            {record.group_name}
+                                            {isSynced && (
+                                                <span
+                                                    className="invitation-item__synced-tag"
+                                                    title="Synced records for this partner"
+                                                >
+                                                    {partnerSyncCount}
+                                                </span>
+                                            )}
+                                        </span>
                                         <span className="invitation-item__date">
                                             {moment(record.created_at).format('DD MMM YYYY, h:mm a')}
                                         </span>

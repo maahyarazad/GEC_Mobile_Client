@@ -61,6 +61,13 @@
     color: #6c757d;
 }
 
+.dashboard-card__counts {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
 .dashboard-card__count {
     background: #2b2c38;
     color: #fff;
@@ -74,6 +81,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+}
+
+/* Synced records use a distinct (green) accent to set them apart. */
+.dashboard-card__count--synced {
+    background: #1f9d57;
 }
 
 /* Scrollable body — grows over time */
@@ -108,6 +120,31 @@
 
 .invitation-item:last-child {
     border-bottom: none;
+}
+
+/* Records whose partner was matched in the sync-stat data. */
+.invitation-item--synced {
+    border-left: 3px solid #1f9d57;
+    background: #f1faf4;
+    padding-left: 0.6rem;
+    margin: 0 -0.6rem;
+    border-radius: 6px;
+}
+
+.invitation-item__synced-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: #1f9d57;
+    border-radius: 999px;
+    vertical-align: middle;
 }
 
 .invitation-item__top {
