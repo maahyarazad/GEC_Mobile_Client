@@ -200,3 +200,90 @@
 .dashboard-card__toggle:hover {
     background: #f0f0f0;
 }
+
+/* App users by platform (top-right) */
+.app-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.app-stat-platform {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    /* platform accent applied via --accent */
+    border-top: 3px solid var(--accent, #2b2c38);
+}
+
+.app-stat-platform--android {
+    --accent: #3ddc84; /* Android green */
+}
+
+.app-stat-platform--ios {
+    --accent: #555759; /* Apple graphite */
+}
+
+.app-stat-platform__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.app-stat-platform__icon {
+    font-size: 1.4rem;
+    color: var(--accent);
+}
+
+.app-stat-platform__name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #2b2c38;
+}
+
+.app-stat-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.app-stat-metric__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.app-stat-metric__label {
+    font-size: 0.74rem;
+    color: #6c757d;
+}
+
+.app-stat-metric__total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.app-stat-metric__split {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.app-stat-lang {
+    flex: 1;
+    font-size: 0.72rem;
+    color: #41454f;
+    background: #f1f3f5;
+    border-radius: 6px;
+    padding: 2px 8px;
+    text-align: center;
+}
+
+.app-stat-lang b {
+    color: #2b2c38;
+}

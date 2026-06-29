@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import './Dashboard.css'
 import moment from 'moment'
 import { ProgressSpinner } from 'primereact/progressspinner'
+import { FaAndroid, FaApple } from 'react-icons/fa'
 import { axiosInstance } from '../../utils/interceptor/Interceptor'
 import { useOutletContext } from "react-router-dom";
 interface IInvitationRecord {
@@ -16,6 +17,28 @@ interface IInvitationRecord {
 interface ISyncRecord {
     partner: string;
     total_records: number;
+}
+
+// A row from /dashboard/app-user-stat. `member` encodes the user's language.
+interface IAppUserStat {
+    member: number; // 0 = English speaker, 1 = German speaker
+    platform: string; // 'android' | 'ios'
+    allowed_push_notification: number;
+    past_year_active_login: number;
+}
+
+type Platform = 'android' | 'ios';
+
+// react-icons' exported type isn't assignable to JSX under this @types/react
+// version; cast through a minimal local type (matches the Navbar convention).
+type RIIcon = React.FC<{ size?: number; className?: string }>;
+const AndroidIcon = FaAndroid as unknown as RIIcon;
+const AppleIcon = FaApple as unknown as RIIcon;
+
+// Per-language buckets for a single platform.
+interface IPlatformStat {
+    push: { en: number; de: number };
+    active: { en: number; de: number };
 }
 
 const DEFAULT_VISIBLE = 3;
@@ -46,6 +69,7 @@ const Dashboard: React.FC = () => {
     const [records, setRecords] = useState<IInvitationRecord[]>([]);
     // Normalized partner name -> total_records reported by the sync-stat endpoint.
     const [syncedCounts, setSyncedCounts] = useState<Map<string, number>>(new Map());
+    const [appUserStats, setAppUserStats] = useState<IAppUserStat[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAll, setShowAll] = useState(false);
 
@@ -90,10 +114,27 @@ const Dashboard: React.FC = () => {
         }
     }, [SERVER_BASE_URL]);
 
+    const fetchAppUserStats = useCallback(async () => {
+        try {
+            const response = await axiosInstance.get(`${SERVER_BASE_URL}/dashboard/app-user-stat`);
+
+            if (response.status === 200) {
+                const data: IAppUserStat[] = response.data?.data ?? response.data ?? [];
+                setAppUserStats(Array.isArray(data) ? data : []);
+            }
+        } catch (err) {
+            console.error('Failed to fetch app user stats:', err);
+        }
+    }, [SERVER_BASE_URL]);
+
     useEffect(() => {
         setLoading(true);
-        Promise.all([fetchInvitationRecords(), fetchSyncStat()]).finally(() => setLoading(false));
-    }, [fetchInvitationRecords, fetchSyncStat]);
+        Promise.all([
+            fetchInvitationRecords(),
+            fetchSyncStat(),
+            fetchAppUserStats(),
+        ]).finally(() => setLoading(false));
+    }, [fetchInvitationRecords, fetchSyncStat, fetchAppUserStats]);
 
     const visibleRecords = showAll ? records : records.slice(0, DEFAULT_VISIBLE);
 
@@ -106,6 +147,22 @@ const Dashboard: React.FC = () => {
         });
         return matches;
     }, [records, syncedCounts]);
+
+    // Fold the flat stat rows into per-platform, per-language buckets.
+    const platformStats = useMemo(() => {
+        const empty = (): IPlatformStat => ({ push: { en: 0, de: 0 }, active: { en: 0, de: 0 } });
+        const grouped: Record<Platform, IPlatformStat> = { android: empty(), ios: empty() };
+
+        appUserStats.forEach(row => {
+            const platform = row.platform?.trim().toLowerCase() as Platform;
+            if (platform !== 'android' && platform !== 'ios') return;
+            const lang = row.member === 1 ? 'de' : 'en';
+            grouped[platform].push[lang] += row.allowed_push_notification ?? 0;
+            grouped[platform].active[lang] += row.past_year_active_login ?? 0;
+        });
+
+        return grouped;
+    }, [appUserStats]);
 
     const renderInvitationPanel = () => (
         <div className="dashboard-card">
@@ -176,6 +233,72 @@ const Dashboard: React.FC = () => {
         </div>
     );
 
+    const renderPlatformBlock = (platform: Platform) => {
+        const stat = platformStats[platform];
+        const label = platform === 'android' ? 'Android' : 'iOS';
+        const pushTotal = stat.push.en + stat.push.de;
+        const activeTotal = stat.active.en + stat.active.de;
+
+        return (
+            <div className={`app-stat-platform app-stat-platform--${platform}`}>
+                <div className="app-stat-platform__head">
+                    {platform === 'android'
+                        ? <AndroidIcon className="app-stat-platform__icon" />
+                        : <AppleIcon className="app-stat-platform__icon" />}
+                    <span className="app-stat-platform__name">{label}</span>
+                </div>
+
+                <div className="app-stat-metric">
+                    <div className="app-stat-metric__top">
+                        <span className="app-stat-metric__label">Push enabled</span>
+                        <span className="app-stat-metric__total">{pushTotal}</span>
+                    </div>
+                    <div className="app-stat-metric__split">
+                        <span className="app-stat-lang">EN <b>{stat.push.en}</b></span>
+                        <span className="app-stat-lang">DE <b>{stat.push.de}</b></span>
+                    </div>
+                </div>
+
+                <div className="app-stat-metric">
+                    <div className="app-stat-metric__top">
+                        <span className="app-stat-metric__label">Active (past year)</span>
+                        <span className="app-stat-metric__total">{activeTotal}</span>
+                    </div>
+                    <div className="app-stat-metric__split">
+                        <span className="app-stat-lang">EN <b>{stat.active.en}</b></span>
+                        <span className="app-stat-lang">DE <b>{stat.active.de}</b></span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderAppUserStatPanel = () => (
+        <div className="dashboard-card">
+            <div className="dashboard-card__header">
+                <div>
+                    <h3 className="dashboard-card__title">App Users by Platform</h3>
+                    <span className="dashboard-card__subtitle">Push opt-in &amp; activity, split by language</span>
+                </div>
+            </div>
+
+            <div className="dashboard-card__body">
+                {loading ? (
+                    <div className="dashboard-card__loading">
+                        <ProgressSpinner style={{ width: 36, height: 36 }} strokeWidth="4" />
+                    </div>
+                ) : appUserStats.length === 0 ? (
+                    <div className="dashboard-card__empty">No app user statistics found.</div>
+                ) : (
+                    <div className="app-stat-grid">
+                        {renderPlatformBlock('android')}
+                        {renderPlatformBlock('ios')}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <div className="dashboard-page">
             <div className="dashboard-grid">
@@ -183,7 +306,7 @@ const Dashboard: React.FC = () => {
                     {renderInvitationPanel()}
                 </section>
                 <section className="dashboard-section dashboard-section--top-right">
-                    <div className="dashboard-card dashboard-card--placeholder">Coming soon</div>
+                    {renderAppUserStatPanel()}
                 </section>
                 <section className="dashboard-section dashboard-section--bottom-left">
                     <div className="dashboard-card dashboard-card--placeholder">Coming soon</div>

@@ -31,7 +31,7 @@
 
 ## Part 2
 ## Target File
- 
+
 **Dashboard.tsx**
 **Dashboard.css**
 
@@ -89,4 +89,33 @@
   ],
   "status": true
 }
+```
+
+
+## Part 3
+
+### Target Files
+
+- **Dashboard.tsx**
+- **Dashboard.css**
+
+### Description
+
+1. Consume the `/dashboard/app-user-stat` endpoint. The response will be in the format shown below. In the top-right corner of the dashboard, display Android and iOS icons and assign appropriate colors for each platform.
+
+2. Present the insights in an intuitive way in the top-right section of the dashboard.
+
+3. The `member` column represents language:
+   - `0` = English speaker  
+   - `1` = German speaker  
+
+### Sample Response
+
+```txt
+member|platform|allowed_push_notification|past_year_active_login|
+------+--------+-------------------------+----------------------+
+     0|android |                        5|                    21|
+     0|ios     |                        5|                    63|
+     1|android |                        9|                    14|
+     1|ios     |                       28|                    64|
 ```
