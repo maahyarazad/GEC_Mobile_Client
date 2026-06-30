@@ -1,5 +1,5 @@
 import "./PartnerDetailsEdit.css";
-import React, { useEffect, useLayoutEffect, useRef, useState, useCallback} from "react";
+import React, { useEffect, useRef, useState, useCallback} from "react";
 import { PrimeIcons } from 'primereact/api';
 import { Dialog } from 'primereact/dialog';
 import {
@@ -27,6 +27,7 @@ interface Props {
     categories: IPCategory[];
     partnerService: PartnerServiceType;
     toast: React.RefObject<Toast>;
+    onUpdateSuccess?: () => void;
 }
 
 //Functional Component
@@ -35,6 +36,7 @@ const PartnerDetailsEdit: React.FC<Props> = ({
     partner,
     categories,
     partnerService,
+    onUpdateSuccess,
 }) => {
     // const canRead = StorageService.hasPrivilege(76, 'read')
     // const canAdd = StorageService.hasPrivilege(76, 'add')
@@ -71,6 +73,9 @@ const PartnerDetailsEdit: React.FC<Props> = ({
     const [merchantPin, setMerchantPin] = useState("");
     const [lockPin, setLockPin] = useState(true);
     const merchantPinUnique = useRef(false);
+    // Tracks whether the component is still mounted to avoid setting state
+    // after unmount (e.g. when navigating back to the OfferList tab).
+    const isMounted = useRef(true);
     const [prevInfo, setPrevInfo] = useState({
         specialTags: [{}],
         cuisines: [{}],
@@ -109,13 +114,22 @@ const PartnerDetailsEdit: React.FC<Props> = ({
     //     }
     // }
 
-    useLayoutEffect(() => {
+    // Keep the mounted flag in sync so async callbacks can bail out early.
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    useEffect(() => {
         (async () => {
             try {
-                while (!merchantPinUnique.current) {
+                while (isMounted.current && !merchantPinUnique.current) {
                     const randomCode = Math.ceil(Math.random() * 999999);
 
                     const found = await partnerService.checkPin(randomCode);
+                    if (!isMounted.current) return;
                     if (found) {
                         merchantPinUnique.current = false;
                     } else {
@@ -132,8 +146,8 @@ const PartnerDetailsEdit: React.FC<Props> = ({
         // Get all Hot Offer Tags
         partnerService
             .getAllSpecialTags()
-            .then(async (result) => {
-                setSpecialTagList(result);
+            .then((result) => {
+                if (isMounted.current) setSpecialTagList(result);
             })
             .catch((err) => {
                 console.log(err);
@@ -143,7 +157,7 @@ const PartnerDetailsEdit: React.FC<Props> = ({
         partnerService
             .getAllCuisines()
             .then((result) => {
-                setCuisineList(result);
+                if (isMounted.current) setCuisineList(result);
             })
             .catch((err) => {
                 console.log(err);
@@ -153,12 +167,12 @@ const PartnerDetailsEdit: React.FC<Props> = ({
         partnerService
             .getPartnerTags(partner.id)
             .then((result) => {
-                setPartnerTags(result);
+                if (isMounted.current) setPartnerTags(result);
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
+    }, [partner.id, partnerService]);
 
 
 
@@ -167,10 +181,10 @@ const PartnerDetailsEdit: React.FC<Props> = ({
             if (!partner?.id) return;
 
             const result = await partnerService.getPartnerDetails(partner.id);
-            setPartnerDetail(result);
+            if (isMounted.current) setPartnerDetail(result);
 
             return result;
-        }, [partner?.id]);
+        }, [partner?.id, partnerService]);
 
 
 useEffect(()=>{
@@ -351,6 +365,7 @@ fetchPartnerDetails()
             partnerService
                 .updatePartnerDetail(data)
                 .then((result) => {
+                    if (!isMounted.current) return;
                     setIsLoading(false);
 
                     if (result) {
@@ -382,6 +397,10 @@ fetchPartnerDetails()
                         setPrevInfo(_prevInfo);
 
                         setHasChanged(false);
+
+                        // Return to the OfferList tab and trigger a refetch of
+                        // the updated partner data in the parent component.
+                        onUpdateSuccess?.();
                     } else {
                         toast.current!.show({
                             severity: "error",
@@ -391,6 +410,7 @@ fetchPartnerDetails()
                     }
                 })
                 .catch((err) => {
+                    if (!isMounted.current) return;
                     setIsLoading(false);
                     toast.current!.show({
                         severity: "error",
@@ -503,10 +523,8 @@ fetchPartnerDetails()
     }
 
     return (
-        <>
-            {isLoading ? (<LoadingSpinner />):  (
-
-            <div className="grid text-left text-xs p-4 partner-edit">
+        <div className="grid text-left text-xs p-4 partner-edit relative">
+            {isLoading && <LoadingSpinner />}
                 <div className="col-12 flex justify-content-between">
                     <div className="font-bold text-base">Partner Details</div>
 
@@ -889,9 +907,7 @@ fetchPartnerDetails()
                         </div>
                     </div>
                 </div>
-            </div>
-            )}
-        </>
+        </div>
     );
 };
 

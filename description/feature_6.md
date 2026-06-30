@@ -119,3 +119,4 @@ member|platform|allowed_push_notification|past_year_active_login|
      1|android |                        9|                    14|
      1|ios     |                       28|                    64|
 ```
+
