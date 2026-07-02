@@ -34,3 +34,21 @@ Refine the overall design of `PartnerOnboarding.tsx` by:
 - Unifying the color scheme.
 - Making spacing and alignment more consistent.
 - Ensuring form elements follow the application's overall UI/UX design guidelines.
+
+
+# Bug/Improvement: Enhance Contact Table in Partner Onboarding
+
+## Description
+
+### 1. Update Contact Selection Logic
+
+In the `ContactTable.tsx` component, implement the following behavior:
+
+- Clicking the **Recipient** action should add the selected contact to the **Recipient** list.
+- If the contact is already in the **Recipient** list, the **Recipient** button should be disabled.
+- The **Recipient** input field should display the selected contacts as removable email tags, similar to a multi-select dropdown.
+- Apply the same behavior to the **CC** list:
+  - Clicking the **CC** action should add the selected contact to the **CC** list.
+  - If the contact is already in the **CC** list, the **CC** button should be disabled.
+  - The **CC** input field should also display removable email tags.
+- Both the **Recipient** and **CC** lists should contain contact objects and be converted to the required format when submitting the request to the server.

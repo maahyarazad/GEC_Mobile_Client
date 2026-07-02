@@ -10,3 +10,4 @@
    ```tsx
    {isLoading ? (<LoadingSpinner />) : ...}
    ```
+

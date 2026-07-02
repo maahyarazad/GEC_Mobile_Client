@@ -13,7 +13,8 @@ import { StorageService } from '../../services/Storage/Storage.service'
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
-import ContactTable, { ContactTableRef, ContactSelection } from "./ContactTable";
+import ContactTable, { ContactRole } from "./ContactTable";
+import { Chip } from "primereact/chip";
 import MailLogs from "./MailLogs";
 import { InputSwitch } from 'primereact/inputswitch';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -95,14 +96,13 @@ export default function PartnerOnboarding() {
 
     const [showDialog, setShowDialog] = useState(false);
     const [showLogDialog, setShowLogDialog] = useState(false);
-    const contactTableRef = useRef<ContactTableRef>(null);
 
     const [webPartnerDiloag, setWebPartnerDiloag] = useState<WebPartner | null>(null);
-    const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
-    const [selectedEmail_RecipientName, setSelectedEmail_RecipientName] = useState<string[]>([]);
-    const [languageList, setLanguageList] = useState<string[]>([]);
+    // The Recipient and CC lists hold full contact objects; they are converted
+    // to the format expected by the server only when the request is sent.
+    const [recipientContacts, setRecipientContacts] = useState<PartnerContact[]>([]);
+    const [ccContacts, setCcContacts] = useState<PartnerContact[]>([]);
     const [selectedTestEmail, setSelectedTestEmail] = useState<string>('');
-    const [ccInput, setCcInput] = useState<string>("");
     const [bccInput, setBccInput] = useState<string>("");
     const [requestLoading, setRequestLoading] = useState(false);
 
@@ -191,20 +191,28 @@ export default function PartnerOnboarding() {
         }));
     };
 
-    const handleContactSelectionChange = (selection: ContactSelection) => {
-        const recipientContacts = contactList.filter((c) =>
-            selection.recipients.includes(c.id)
+    const addContact = (contact: PartnerContact, role: ContactRole) => {
+        const setter = role === "recipient" ? setRecipientContacts : setCcContacts;
+        setter((prev) =>
+            prev.some((c) => c.id === contact.id) ? prev : [...prev, contact]
         );
-        setSelectedEmails(recipientContacts.map((c) => c.email));
-        setSelectedEmail_RecipientName(recipientContacts.map((c) => c.firstName));
-        setLanguageList(recipientContacts.map((c) => c.language.slice(0, 2)));
+    };
 
-        const ccContacts = contactList.filter((c) => selection.cc.includes(c.id));
-        setCcInput(ccContacts.map((c) => c.email).join(", "));
+    const removeContact = (id: number, role: ContactRole) => {
+        const setter = role === "recipient" ? setRecipientContacts : setCcContacts;
+        setter((prev) => prev.filter((c) => c.id !== id));
+    };
+
+    const selectAllRecipients = () => setRecipientContacts(contactList);
+
+    const clearContacts = () => {
+        setRecipientContacts([]);
+        setCcContacts([]);
     };
 
     const setUserDialog = async (partner: WebPartner) => {
         setWebPartnerDiloag(partner);
+        clearContacts();
         fetchContactData(partner.id);
         setShowDialog(true);
     };
@@ -246,10 +254,10 @@ export default function PartnerOnboarding() {
                 `${SERVER_BASE_URL}/partners/send-partner-Email`,
                 {
                     data: {
-                        name: selectedEmail_RecipientName,
-                        recipients: selectedEmails,
-                        language: languageList,
-                        cc: ccInput,
+                        name: recipientContacts.map((c) => c.firstName),
+                        recipients: recipientContacts.map((c) => c.email),
+                        language: recipientContacts.map((c) => c.language.slice(0, 2)),
+                        cc: ccContacts.map((c) => c.email).join(", "),
                         bcc: [...bccInput.split(",")],
                         partnerId: webPartnerDiloag?.id,
                         test_mode: checkedTestMode,
@@ -274,7 +282,7 @@ export default function PartnerOnboarding() {
 
     const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    const isDisabled = selectedEmails.length === 0 || !isValidEmail(selectedTestEmail);
+    const isDisabled = recipientContacts.length === 0 || !isValidEmail(selectedTestEmail);
 
     // ── Column templates ───────────────────────────────────────────────────
 
@@ -492,8 +500,7 @@ export default function PartnerOnboarding() {
                             setShowDialog(false);
                             setWebPartnerDiloag(null);
                             setContactList([]);
-                            setSelectedEmails([]);
-                            setCcInput("");
+                            clearContacts();
                         }}
                         style={{ width: "60vw", maxWidth: "1500px" }}
                         dismissableMask
@@ -543,31 +550,57 @@ export default function PartnerOnboarding() {
                             <div className='p-2'>
                                 <ContactTable
                                     contactList={contactList}
-                                    ref={contactTableRef}
-                                    onChangeSelected={handleContactSelectionChange}
+                                    recipients={recipientContacts}
+                                    cc={ccContacts}
+                                    onAdd={addContact}
+                                    onSelectAllRecipients={selectAllRecipients}
+                                    onClear={clearContacts}
                                 />
 
-                                {selectedEmails.length > 0 && (
-                                    <div className='field mt-4'>
-                                        <label className='block mb-2 font-semibold'>Recipients</label>
-                                        <InputText
-                                            type='text'
-                                            value={selectedEmails.join(", ")}
-                                            disabled
-                                            className='w-full'
-                                        />
+                                <div className='field mt-4'>
+                                    <label className='block mb-2 font-semibold'>Recipients</label>
+                                    <div className='p-inputtext w-full flex flex-wrap gap-2 align-items-center'>
+                                        {recipientContacts.length === 0 ? (
+                                            <span className='text-color-secondary'>
+                                                Add contacts as recipients from the table above
+                                            </span>
+                                        ) : (
+                                            recipientContacts.map((c) => (
+                                                <Chip
+                                                    key={c.id}
+                                                    label={c.email}
+                                                    removable
+                                                    onRemove={() => {
+                                                        removeContact(c.id, "recipient");
+                                                        return true;
+                                                    }}
+                                                />
+                                            ))
+                                        )}
                                     </div>
-                                )}
+                                </div>
 
                                 <div className='field mt-3'>
                                     <label className='block mb-2 font-semibold'>CC</label>
-                                    <InputText
-                                        type='text'
-                                        value={ccInput}
-                                        disabled
-                                        placeholder='Add contacts to CC from the table above'
-                                        className='w-full'
-                                    />
+                                    <div className='p-inputtext w-full flex flex-wrap gap-2 align-items-center'>
+                                        {ccContacts.length === 0 ? (
+                                            <span className='text-color-secondary'>
+                                                Add contacts to CC from the table above
+                                            </span>
+                                        ) : (
+                                            ccContacts.map((c) => (
+                                                <Chip
+                                                    key={c.id}
+                                                    label={c.email}
+                                                    removable
+                                                    onRemove={() => {
+                                                        removeContact(c.id, "cc");
+                                                        return true;
+                                                    }}
+                                                />
+                                            ))
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className='field mt-3'>
@@ -609,7 +642,7 @@ export default function PartnerOnboarding() {
                                     <Button
                                         label="Send"
                                         icon={requestLoading ? "pi pi-spin pi-spinner" : "pi pi-send"}
-                                        disabled={checkedTestMode ? isDisabled : selectedEmails.length === 0 || requestLoading}
+                                        disabled={checkedTestMode ? isDisabled : recipientContacts.length === 0 || requestLoading}
                                         size="small"
                                         onClick={sendPostRequest}
                                     />
