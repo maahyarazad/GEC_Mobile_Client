@@ -13,7 +13,7 @@ import { StorageService } from '../../services/Storage/Storage.service'
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
-import ContactTable, { ContactTableRef } from "./ContactTable";
+import ContactTable, { ContactTableRef, ContactSelection } from "./ContactTable";
 import MailLogs from "./MailLogs";
 import { InputSwitch } from 'primereact/inputswitch';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -48,6 +48,10 @@ const EMPTY_FILTERS: DataTableFilterMeta = {
     phone: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
     email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
 };
+
+// ── Theme ──────────────────────────────────────────────────────────────────
+
+const BRAND_COLOR = '#F67D1D';
 
 // ── Component ──────────────────────────────────────────────────────────────
 
@@ -98,7 +102,7 @@ export default function PartnerOnboarding() {
     const [selectedEmail_RecipientName, setSelectedEmail_RecipientName] = useState<string[]>([]);
     const [languageList, setLanguageList] = useState<string[]>([]);
     const [selectedTestEmail, setSelectedTestEmail] = useState<string>('');
-    const [ccInput, setCcInput] = useState<string>("office2@german-emirates-club.com");
+    const [ccInput, setCcInput] = useState<string>("");
     const [bccInput, setBccInput] = useState<string>("");
     const [requestLoading, setRequestLoading] = useState(false);
 
@@ -187,11 +191,16 @@ export default function PartnerOnboarding() {
         }));
     };
 
-    const handleShowSelected = (ids: number[]) => {
-        const filtered = contactList.filter((c) => ids.includes(c.id));
-        setSelectedEmails(filtered.map((c) => c.email));
-        setSelectedEmail_RecipientName(filtered.map((c) => c.firstName));
-        setLanguageList(filtered.map((c) => c.language.slice(0, 2)));
+    const handleContactSelectionChange = (selection: ContactSelection) => {
+        const recipientContacts = contactList.filter((c) =>
+            selection.recipients.includes(c.id)
+        );
+        setSelectedEmails(recipientContacts.map((c) => c.email));
+        setSelectedEmail_RecipientName(recipientContacts.map((c) => c.firstName));
+        setLanguageList(recipientContacts.map((c) => c.language.slice(0, 2)));
+
+        const ccContacts = contactList.filter((c) => selection.cc.includes(c.id));
+        setCcInput(ccContacts.map((c) => c.email).join(", "));
     };
 
     const setUserDialog = async (partner: WebPartner) => {
@@ -276,7 +285,7 @@ export default function PartnerOnboarding() {
     const typeBody = (row: WebPartner) => (
         <Tag
             value={row.type.charAt(0).toUpperCase() + row.type.slice(1)}
-            style={{ backgroundColor: '#F67D1D' }}
+            style={{ backgroundColor: BRAND_COLOR }}
         />
     );
 
@@ -296,17 +305,19 @@ export default function PartnerOnboarding() {
         })();
         const isVisible = isExpired || isExpiringSoon;
         return (
-            <div className='d-flex align-items-center gap-1'>
-                <i
-                    className={`pi pi-exclamation-triangle mr-2 ${isVisible ? "pi-pulse" : ""}`}
-                    style={{
-                        fontSize: '1.4rem',
-                        color: isExpired ? 'red' : 'orange',
-                        opacity: isVisible ? 1 : 0,
-                    }}
-                    title={isExpired ? 'Expired' : 'Expiring within 3 months'}
-                />
-                <span>
+            <div className='align-content-center flex justify-content-between'>
+                <span className='align-self-center'>
+                    <i
+                        className={`pi pi-exclamation-triangle mr-2 ${isVisible ? "pi-pulse" : ""}`}
+                        style={{
+                            fontSize: '1.4rem',
+                            color: isExpired ? 'red' : 'orange',
+                            opacity: isVisible ? 1 : 0,
+                        }}
+                        title={isExpired ? 'Expired' : 'Expiring within 3 months'}
+                    />
+                </span>
+                <span className='align-self-center'>
                     {expiryDate
                         ? expiryDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })
                         : '-'}
@@ -445,7 +456,7 @@ export default function PartnerOnboarding() {
 
                         <Column field="type" header="Type" body={typeBody} sortable filter style={{ maxWidth: 50 }} />
                         <Column field="status" header="Status" body={statusBody} sortable filter style={{ maxWidth: 50 }} />
-                        <Column field="expiry_date" header="Expiry Date" body={expirtTimeBody} sortable filter style={{ maxWidth: 70 }} />
+                        <Column field="expiry_date" header="Expiry Date" body={expirtTimeBody} sortable filter style={{ maxWidth: 80 }} />
 
                         {canModify && (
                             <Column
@@ -482,13 +493,14 @@ export default function PartnerOnboarding() {
                             setWebPartnerDiloag(null);
                             setContactList([]);
                             setSelectedEmails([]);
+                            setCcInput("");
                         }}
                         style={{ width: "60vw", maxWidth: "1500px" }}
                         dismissableMask
                         header={() => (
                             <div className='flex align-items-center justify-content-between'>
                                 <div>
-                                    <span style={{ color: '#F67D1D', fontSize: '1.5rem' }}>Send Employee Onboarding Email</span>
+                                    <span style={{ color: BRAND_COLOR, fontSize: '1.5rem' }}>Send Employee Onboarding Email</span>
                                     <br /><br />
                                     <span style={{ color: 'gray' }}>Selected Partner:&nbsp;</span>
                                     {webPartnerDiloag?.group_name}
@@ -498,7 +510,14 @@ export default function PartnerOnboarding() {
                                         <span style={{ fontSize: '1rem', fontWeight: 'normal' }}>Enable Test Mode</span>
                                         <InputSwitch
                                             checked={checkedTestMode}
-                                            onChange={(e) => setCheckedTestMode(e.value)}
+                                            onChange={(e) => {                                                
+                                                setCheckedTestMode(e.value)
+                                                if(!e.value){
+                                                    setBccInput("office1@german-emirates-club.com, office2@german-emirates-club.com");
+                                                }else{
+                                                    setBccInput("");
+                                                }
+                                            }}
                                             style={{ transform: 'scale(0.7)' }}
                                         />
                                     </div>
@@ -522,42 +541,62 @@ export default function PartnerOnboarding() {
                             </div>
                         ) : (
                             <div className='p-2'>
-                                <div className='pt-2'>
-                                    <ContactTable
-                                        contactList={contactList}
-                                        ref={contactTableRef}
-                                        onChangeSelected={handleShowSelected}
-                                    />
-                                </div>
+                                <ContactTable
+                                    contactList={contactList}
+                                    ref={contactTableRef}
+                                    onChangeSelected={handleContactSelectionChange}
+                                />
 
                                 {selectedEmails.length > 0 && (
-                                    <div className='mt-2'>
-                                        <strong className='mb-1'>Recipients</strong>
+                                    <div className='field mt-4'>
+                                        <label className='block mb-2 font-semibold'>Recipients</label>
                                         <InputText
                                             type='text'
                                             value={selectedEmails.join(", ")}
                                             disabled
-                                            className='w-full border rounded px-3 py-1.5 text-sm'
+                                            className='w-full'
                                         />
                                     </div>
                                 )}
 
+                                <div className='field mt-3'>
+                                    <label className='block mb-2 font-semibold'>CC</label>
+                                    <InputText
+                                        type='text'
+                                        value={ccInput}
+                                        disabled
+                                        placeholder='Add contacts to CC from the table above'
+                                        className='w-full'
+                                    />
+                                </div>
+
+                                <div className='field mt-3'>
+                                    <label className='block mb-2 font-semibold'>BCC</label>
+                                    <InputText
+                                        type='text'
+                                        value={bccInput}
+                                        onChange={(e) => setBccInput(e.target.value)}
+                                        placeholder='bcc@example.com, bcc2@example.com'
+                                        className='w-full'
+                                    />
+                                </div>
+
                                 {checkedTestMode && (
-                                    <div className='mt-2'>
-                                        <strong className='mb-1'>Send Test Email to:</strong>
+                                    <div className='field mt-3'>
+                                        <label className='block mb-2 font-semibold'>Send Test Email to</label>
                                         <InputText
                                             type='text'
                                             value={selectedTestEmail}
                                             onChange={(e) => setSelectedTestEmail(e.target.value)}
-                                            placeholder='cc@example.com, cc2@example.com'
-                                            className='w-full border rounded px-3 py-1.5 text-sm'
+                                            placeholder='test@example.com'
+                                            className='w-full'
                                         />
                                     </div>
                                 )}
 
                                 {addRemark && (
-                                    <div className='mt-2'>
-                                        <strong className='mb-1'>Remarks</strong>
+                                    <div className='field mt-3'>
+                                        <label className='block mb-2 font-semibold'>Remarks</label>
                                         <Editor
                                             value={remark}
                                             onTextChange={(e) => setRemark(e.htmlValue)}
@@ -566,40 +605,15 @@ export default function PartnerOnboarding() {
                                     </div>
                                 )}
 
-                                <div className='mt-2'>
-                                    <strong className='mb-1'>CC</strong>
-                                    <InputText
-                                        type='text'
-                                        value={ccInput}
-                                        disabled
-                                        onChange={(e) => setCcInput(e.target.value)}
-                                        placeholder='cc@example.com, cc2@example.com'
-                                        className='w-full border rounded px-3 py-1.5 text-sm'
+                                <div className='flex justify-content-end mt-4'>
+                                    <Button
+                                        label="Send"
+                                        icon={requestLoading ? "pi pi-spin pi-spinner" : "pi pi-send"}
+                                        disabled={checkedTestMode ? isDisabled : selectedEmails.length === 0 || requestLoading}
+                                        size="small"
+                                        onClick={sendPostRequest}
                                     />
                                 </div>
-
-                                <div className='mt-2'>
-                                    <strong className='mb-1'>BCC</strong>
-                                    <InputText
-                                        type='text'
-                                        value={bccInput}
-                                        onChange={(e) => setBccInput(e.target.value)}
-                                        placeholder='bcc@example.com, bcc2@example.com'
-                                        className='w-full border rounded px-3 py-1.5 text-sm'
-                                    />
-                                </div>
-
-                                <Button
-                                    disabled={checkedTestMode ? isDisabled : selectedEmails.length === 0 || requestLoading}
-                                    className={`mt-2 ${requestLoading ? "p-button-secondary outlined" : ""}`}
-                                    size="small"
-                                    onClick={sendPostRequest}
-                                >
-                                    {requestLoading
-                                        ? <i className="pi pi-spin pi-spinner" style={{ fontSize: '1rem' }}></i>
-                                        : <>Send</>
-                                    }
-                                </Button>
                             </div>
                         )}
                     </Dialog>
@@ -616,7 +630,7 @@ export default function PartnerOnboarding() {
                         dismissableMask
                         header={() => (
                             <div>
-                                <span style={{ color: '#F67D1D', fontSize: '1.5rem' }}>Sent Email Logs</span>
+                                <span style={{ color: BRAND_COLOR, fontSize: '1.5rem' }}>Sent Email Logs</span>
                                 <br /><br />
                                 <span style={{ color: 'gray' }}>Selected Partner:&nbsp;</span>
                                 {webPartnerDiloag?.group_name}
