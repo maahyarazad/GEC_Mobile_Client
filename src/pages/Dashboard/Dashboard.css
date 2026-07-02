@@ -147,6 +147,22 @@
     vertical-align: middle;
 }
 
+.invitation-item__batch-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    height: 1.25rem;
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #41454f;
+    background: #e7eaf0;
+    border-radius: 999px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
 .invitation-item__top {
     display: flex;
     align-items: baseline;

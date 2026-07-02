@@ -7,9 +7,10 @@ import { axiosInstance } from '../../utils/interceptor/Interceptor'
 import { useOutletContext } from "react-router-dom";
 interface IInvitationRecord {
     id: number;
-    created_at: string;
-    recipient: string; // JSON-encoded array of email strings
     group_name: string;
+    all_recipients: string; // JSON-encoded array of email-string arrays (one array per email batch)
+    latest_created_at: string;
+    email_batch_count: number;
 }
 
 // A record returned by the sync-stat endpoint; `partner` is the partner name
@@ -43,15 +44,28 @@ interface IPlatformStat {
 
 const DEFAULT_VISIBLE = 3;
 
-// recipient arrives as a JSON-encoded string; parse defensively.
-const parseRecipients = (recipient: string): string[] => {
+// all_recipients arrives as a JSON-encoded array of arrays — one inner array
+// per email batch that was sent to the partner. Parse defensively and tolerate
+// a flat array of strings as a fallback.
+const parseRecipientBatches = (raw: string): string[][] => {
     try {
-        const parsed = JSON.parse(recipient);
-        return Array.isArray(parsed) ? parsed : [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map(batch =>
+            Array.isArray(batch)
+                ? batch.filter((e): e is string => typeof e === 'string')
+                : typeof batch === 'string'
+                    ? [batch]
+                    : []
+        );
     } catch {
-        return recipient ? [recipient] : [];
+        return [];
     }
 };
+
+// Distinct recipient emails across every batch, preserving first-seen order.
+const uniqueRecipients = (batches: string[][]): string[] =>
+    Array.from(new Set(batches.flat()));
 
 // Mirror of the backend normalization used to compare partner names:
 //   REPLACE(... lower(trim(partner)) ..., umlauts -> ascii, 'ß' -> 'ss')
@@ -84,7 +98,7 @@ const Dashboard: React.FC = () => {
                 const data: IInvitationRecord[] = response.data.data ?? [];
                 // latest first
                 const sorted = [...data].sort(
-                    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                    (a, b) => new Date(b.latest_created_at).getTime() - new Date(a.latest_created_at).getTime()
                 );
                 setRecords(sorted);
             }
@@ -189,7 +203,9 @@ const Dashboard: React.FC = () => {
                 ) : (
                     <ul className="invitation-list">
                         {visibleRecords.map(record => {
-                            const recipients = parseRecipients(record.recipient);
+                            const batches = parseRecipientBatches(record.all_recipients);
+                            const recipients = uniqueRecipients(batches);
+                            const batchCount = record.email_batch_count ?? batches.length;
                             const partnerSyncCount = syncedCounts.get(normalizePartner(record.group_name)) ?? 0;
                             const isSynced = partnerSyncCount > 0;
                             return (
@@ -208,9 +224,17 @@ const Dashboard: React.FC = () => {
                                                     {partnerSyncCount}
                                                 </span>
                                             )}
+                                            {batchCount > 0 && (
+                                                <span
+                                                    className="invitation-item__batch-tag"
+                                                    title="Email batches sent to this partner"
+                                                >
+                                                    {batchCount} {batchCount === 1 ? 'email' : 'emails'}
+                                                </span>
+                                            )}
                                         </span>
                                         <span className="invitation-item__date">
-                                            {moment(record.created_at).format('DD MMM YYYY, h:mm a')}
+                                            {moment(record.latest_created_at).format('DD MMM YYYY, h:mm a')}
                                         </span>
                                     </div>
                                     <div className="invitation-item__recipients">
