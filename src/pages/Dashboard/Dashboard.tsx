@@ -186,9 +186,9 @@ const Dashboard: React.FC = () => {
                     <span className="dashboard-card__subtitle">Latest invitation email records</span>
                 </div>
                 <div className="dashboard-card__counts">
-                    <span className="dashboard-card__count" title="Invitation records">{records.length}</span>
+                    <span className="dashboard-card__count" title="Invitation records">Sent Invitation: {records.length}</span>
                     <span className="dashboard-card__count dashboard-card__count--synced" title="Matched synced partners">
-                        {matchedSyncedCount}
+                        Synchronized: {matchedSyncedCount}
                     </span>
                 </div>
             </div>
@@ -297,12 +297,26 @@ const Dashboard: React.FC = () => {
         );
     };
 
-    const renderAppUserStatPanel = () => (
+    const renderAppUserStatPanel = () => {
+        const totalPush =
+            platformStats.android.push.en + platformStats.android.push.de +
+            platformStats.ios.push.en + platformStats.ios.push.de;
+        const totalActive =
+            platformStats.android.active.en + platformStats.android.active.de +
+            platformStats.ios.active.en + platformStats.ios.active.de;
+
+        return (
         <div className="dashboard-card">
             <div className="dashboard-card__header">
                 <div>
                     <h3 className="dashboard-card__title">App Users by Platform</h3>
                     <span className="dashboard-card__subtitle">Push opt-in &amp; activity, split by language</span>
+                </div>
+                <div className="dashboard-card__counts">
+                    <span className="dashboard-card__count" title="Total push-enabled users">Notification Enabled: {totalPush}</span>
+                    <span className="dashboard-card__count dashboard-card__count--synced" title="Total active users (past year)">
+                        Active User: {totalActive}
+                    </span>
                 </div>
             </div>
 
@@ -321,7 +335,8 @@ const Dashboard: React.FC = () => {
                 )}
             </div>
         </div>
-    );
+        );
+    };
 
     return (
         <div className="dashboard-page">

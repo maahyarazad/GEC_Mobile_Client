@@ -1,4 +1,4 @@
-# Feature 7: Enhance Partner Onboarding in Dashbaord
+# Feature 9: Enhance Partner Onboarding in Dashbaord
 
 ## Description
 
@@ -12,3 +12,10 @@ id  |group_name                      |all_recipients                            
 1683|HYDAC INTERNATIONAL             |[["sushil.kumar@hydac.com", "office2@german-emirates-club.com", "maahyarazad@gmail.com"]]                                                                                                                                                                      |2026-06-22 15:00:21|                1|
 1695|Octavia Logistic Services L.L.C.|[["reimund@octavia-logistics.com", "office2@german-emirates-club.com", "maahyarazad@gmail.com"]]                                                                                                                                                               |2026-06-22 14:59:33|                1|
 ```
+
+
+# Feature 9.1: Enhance Dashboard App Users by Platform
+
+## Description
+
+Similar to **“Partner Onboarding Invitations”**, which displays total numbers in two circles, add the same total number display (using the same colors) to **“App Users by Platform.”**

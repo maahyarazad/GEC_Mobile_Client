@@ -250,6 +250,7 @@ export default function PartnerOnboarding() {
     const sendPostRequest = async () => {
         setRequestLoading(true);
         try {
+            
             const response = await axiosInstance.post(
                 `${SERVER_BASE_URL}/partners/send-partner-Email`,
                 {
@@ -263,6 +264,7 @@ export default function PartnerOnboarding() {
                         test_mode: checkedTestMode,
                         test_mode_recipient: selectedTestEmail,
                         remark: remark,
+                        partner_title: webPartnerDiloag?.group_name,
                     },
                 }
             );
