@@ -1,5 +1,5 @@
 import "./PartnerDetails.css";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
@@ -118,7 +118,24 @@ const PartnerDetails: React.FC<Props> = () => {
     setActiveIndex(e.index);
   };
 
-  const PartnerDetailContent = () => {
+  // Refetch the latest partner data so the UI reflects saved changes.
+  const refetchPartner = useCallback(() => {
+    if (!partner?.id) return;
+    PartnerService.getPartner(partner.id)
+      .then((result) => setPartner(result))
+      .catch((err) => console.log(err));
+  }, [partner?.id]);
+
+  // Called after a successful partner-details update: return to the
+  // OfferList tab and refresh the partner data.
+  const handleDetailsUpdated = useCallback(() => {
+    setActiveIndex(0);
+    refetchPartner();
+  }, [refetchPartner]);
+
+  // Memoize the tab content so the active tab isn't remounted on every
+  // parent re-render (the previous inline component was a new type each render).
+  const partnerDetailContent = useMemo(() => {
     if (partner != undefined && pCategories != undefined) {
       switch (activeIndex) {
         case 0:
@@ -130,12 +147,13 @@ const PartnerDetails: React.FC<Props> = () => {
               partnerService={PartnerService}
               partner={partner}
               categories={pCategories}
+              onUpdateSuccess={handleDetailsUpdated}
             />
           );
       }
     }
     return <></>;
-  };
+  }, [activeIndex, partner, pCategories, handleDetailsUpdated]);
 
   return (
     <>
@@ -165,7 +183,7 @@ const PartnerDetails: React.FC<Props> = () => {
             model={items}
           />
           <div className="partner-detail-container">
-            <PartnerDetailContent />
+            {partnerDetailContent}
           </div>
         </div>
         <Toast
