@@ -1,8 +1,8 @@
 import "./PartnerCategory.css";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "primereact/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Toolbar } from "primereact/toolbar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -128,6 +128,7 @@ const PartnerCategory: React.FC<Props> = () => {
   const canDelete = StorageService.hasPrivilege(76, "delete");
 
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [categoryList, setCategoryList] = useState<ICategoryWithOffers[]>([]);
   const toast = useRef<Toast>(null);
   const [filterValue, setFilterValue] = useState("");
@@ -167,15 +168,10 @@ const PartnerCategory: React.FC<Props> = () => {
     { field: "pcategory_de", header: "Kategorie (German)" },
   ];
 
-  useEffect(() => {
-    initFilters();
-    loadCategories();
-  }, []);
-
-  // Fetch categories together with the `/category-offer` rows and build the
+   // Fetch categories together with the `/category-offer` rows and build the
   // hierarchical category -> partner -> {tags, offers} structure. Categories
   // with no active offers still appear (empty partner list).
-  const loadCategories = () => {
+  const loadCategories = useCallback(() => {
     Promise.all([
       PartnerService.getAllCategories(),
       PartnerService.getCategoryOffers(),
@@ -195,7 +191,26 @@ const PartnerCategory: React.FC<Props> = () => {
       .catch((err) => {
         console.log(err);
       });
-  };
+  },[]);
+
+
+  useEffect(() => {
+    initFilters();
+    loadCategories();
+  }, [loadCategories]);
+
+  // Reopen the partners dialog when the URL carries a category id (e.g. the user
+  // pressed the browser Back button after viewing a partner's details).
+  useEffect(() => {
+    const catId = searchParams.get("partners");
+    if (catId) {
+      setActiveCategoryId(Number(catId));
+      setPartnersDialog(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+ 
 
   const leftToolbarContent = () => {
     return <div className="text-lg font-bold">Manage Partner Categories</div>;
@@ -396,11 +411,19 @@ const PartnerCategory: React.FC<Props> = () => {
   const openPartners = (row: ICategoryWithOffers) => {
     setActiveCategoryId(row.id);
     setPartnersDialog(true);
+    // Reflect the open dialog in the URL so navigating away and pressing Back
+    // returns here with the dialog reopened.
+    const params = new URLSearchParams(searchParams);
+    params.set("partners", String(row.id));
+    setSearchParams(params);
   };
 
   const hidePartners = () => {
     setPartnersDialog(false);
     setActiveCategoryId(null);
+    const params = new URLSearchParams(searchParams);
+    params.delete("partners");
+    setSearchParams(params);
   };
 
   const openOffersTags = (partner: ICategoryPartner) => {

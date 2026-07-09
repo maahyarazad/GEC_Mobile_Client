@@ -255,3 +255,12 @@ WHERE apa.app = 2
     AND NOW() BETWEEN wp.time AND DATE_ADD(wp.time, INTERVAL wp.duration YEAR)
 GROUP BY app_tag.id;
 ```
+
+
+
+## Part 6
+
+## Description
+
+1. From **`PartnerList.tsx`**, the operator can select any partner, which opens the partner details in **`PartnerDetails.tsx`**. Add the partner ID as a query parameter so it can be referenced from other parts of the application.
+2. Using the reference from the previous part, add it to **`PartnersDialog.tsx`** so the operator can navigate from this dialog to **`PartnerDetails.tsx`**. Also, add a query parameter for the dialog opening so the user can use the back button to navigate back to the dialog.

@@ -278,7 +278,9 @@ const PartnerList: React.FC<Props> = () => {
     }
 
     const handlePartnerLink  = (partner: IPartner) => {
-        navigate('detail', {state: {app: selectedApp, partner: partner}})
+        // Include the partner id in the URL so the details page can be referenced
+        // (and reloaded) from elsewhere; keep state for the in-app fast path.
+        navigate(`detail?partnerId=${partner.id}`, {state: {app: selectedApp, partner: partner}})
     }
 
     const partnerColumnBodyTemplate = (rowData: IPartner) => {

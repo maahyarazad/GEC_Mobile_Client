@@ -42,6 +42,7 @@ const PartnerDetails: React.FC<Props> = () => {
   const [loading, setLoading] = useState(false);
   const state = location.state as LocationProps;
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const toast = useRef<Toast>(null);
   const hasInit = useRef(false);
 
@@ -55,7 +56,28 @@ const PartnerDetails: React.FC<Props> = () => {
       setPartner(state.partner);
       getAllCategories();
     } else {
-      navigate("../");
+      // No in-app state (deep link / browser Back / opened from another page):
+      // fall back to the partnerId query param and fetch the partner.
+      const partnerId = searchParams.get("partnerId");
+      if (partnerId) {
+        PartnerService.getPartner(Number(partnerId))
+          .then((result) => {
+            setPartner(result);
+            getAllCategories();
+            // Re-seed location.state so child views that read
+            // location.state.partner (e.g. the Offers tab) keep working.
+            navigate(
+              { search: `?partnerId=${partnerId}` },
+              { replace: true, state: { partner: result } }
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+            navigate("../");
+          });
+      } else {
+        navigate("../");
+      }
     }
 
   }, []);

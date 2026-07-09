@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
@@ -44,11 +45,18 @@ const PartnersDialog: React.FC<Props> = ({
   onRemovePartner,
 }) => {
   const [filter, setFilter] = useState("");
+  const navigate = useNavigate();
 
   // Reset the search each time the dialog opens for a category.
   useEffect(() => {
     if (visible) setFilter("");
   }, [visible, category?.id]);
+
+  // Navigate to the partner's details page. The partner id travels as a query
+  // param so PartnerDetails can load it directly (no in-app state needed).
+  const goToPartnerDetails = (partner: ICategoryPartner) => {
+    navigate(`/partner/detail?partnerId=${partner.partner_id}`);
+  };
 
   const filteredPartners = useMemo<ICategoryPartner[]>(() => {
     const list = category?.partners ?? [];
@@ -60,6 +68,16 @@ const PartnersDialog: React.FC<Props> = ({
         String(p.partner_id).includes(term)
     );
   }, [category, filter]);
+
+  const partnerTitleTemplate = (partner: ICategoryPartner) => (
+    <span
+      className="text-primary pressable underline"
+      title="Open partner details"
+      onClick={() => goToPartnerDetails(partner)}
+    >
+      {partner.partner_title}
+    </span>
+  );
 
   const partnerActionTemplate = (partner: ICategoryPartner) => (
     <div className="flex gap-3 justify-content-center align-items-center">
@@ -129,6 +147,7 @@ const PartnersDialog: React.FC<Props> = ({
             header="Partner"
             headerClassName={"py-2 px-2"}
             bodyClassName={"py-2 px-2"}
+            body={partnerTitleTemplate}
           />
           <Column
             field="offerCount"
