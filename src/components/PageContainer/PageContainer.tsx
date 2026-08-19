@@ -36,6 +36,7 @@ import { Toast } from "primereact/toast";
 import ExpertGuestsList from "../../pages/Experts/GuestList";
 import PartnerOnboarding from "../../pages/PartnerOnboarding/PartnerOnboarding";
 import Dashboard from "../../pages/Dashboard";
+import KnowledgeBase from "../../pages/KnowledgeBase";
 
 interface Props {}
 
@@ -134,6 +135,7 @@ const PageContainer: React.FC<Props> = () => {
             <Route index element={<PartnerOnboarding />} />
             <Route path={"new"} element={<ProspectDetailsEdit />} />
           </Route>
+          <Route path={"knowledge-base"} element={<KnowledgeBase />} />
         </Route>
 
         <Route path={"login"} element={<Login />} />
