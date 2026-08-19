@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios"
-import { IPartner, IPartnerDetail, ISpecialTags, IPartnerTags, IPCategory, PartnerServiceType, ICuisine } from "../../@types/Partner";
+import { IPartner, IPartnerDetail, ISpecialTags, IPartnerTags, IPartnerTag, IPCategory, PartnerServiceType, ICuisine, ICategoryOffer } from "../../@types/Partner";
 import { axiosInstance } from "../../utils/interceptor/Interceptor"
 
 const result = (response: AxiosResponse) => response.data.result;
@@ -55,6 +55,26 @@ export const PartnerService:PartnerServiceType = {
 
     updateCategory(update, add, remove): Promise<boolean> {
         return axiosInstance.put<boolean>(`${API_URL}/categories`, {update, add, remove}).then(success)
+    },
+
+    deleteCategory(id): Promise<boolean> {
+        return axiosInstance.delete<boolean>(`${API_URL}/categories/${id}`).then(success)
+    },
+
+    getCategoryOffers(): Promise<ICategoryOffer[]> {
+        return axiosInstance.get<ICategoryOffer[]>(`${API_URL}/category-offer`).then(result)
+    },
+
+    updateCategoryOffers(category_id, add, remove): Promise<boolean> {
+        return axiosInstance.put<boolean>(`${API_URL}/category-offer`, { category_id, add, remove }).then(success)
+    },
+
+    updatePartnerOffersTags(payload): Promise<boolean> {
+        return axiosInstance.put<boolean>(`${API_URL}/offers-tags`, payload).then(success)
+    },
+
+    createPartnerSpecialTag(partner_id, en_tag, de_tag): Promise<IPartnerTag> {
+        return axiosInstance.post<IPartnerTag>(`${API_URL}/specialtag`, { partner_id, en_tag, de_tag }).then(result)
     },
     
     checkPin(pin): Promise<boolean> {
