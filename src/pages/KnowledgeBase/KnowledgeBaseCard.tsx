@@ -40,17 +40,27 @@ const KnowledgeBaseCard: React.FC<Props> = ({
                 </div>
 
                 <div className='kb-card__actions'>
+                    {/* Icon-only actions. The visible label is gone, so each control
+                        carries its own accessible name and a native tooltip. */}
                     {hasVideo ? (
                         <Button
                             className='kb-card__watch'
                             icon='pi pi-play'
-                            label='Watch tutorial'
+                            rounded
+                            aria-label={`Watch tutorial: ${entry.title}`}
+                            title='Watch tutorial'
                             onClick={() => onWatch(entry)}
                         />
                     ) : (
-                        <span className='kb-card__coming-soon'>
-                            <i className='pi pi-clock' aria-hidden='true' /> Video coming soon
-                        </span>
+                        <Button
+                            className='kb-card__coming-soon'
+                            icon='pi pi-clock'
+                            text
+                            rounded
+                            disabled
+                            aria-label={`Video coming soon: ${entry.title}`}
+                            title='Video coming soon'
+                        />
                     )}
 
                     <Button

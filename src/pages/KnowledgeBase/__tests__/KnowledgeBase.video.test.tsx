@@ -67,7 +67,7 @@ describe('Knowledge Base video playback', () => {
 
         renderKnowledgeBase();
 
-        expect(await screen.findByText(/video coming soon/i)).toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /video coming soon/i })).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /watch tutorial/i })).toBeNull();
     });
 
@@ -77,7 +77,7 @@ describe('Knowledge Base video playback', () => {
         renderKnowledgeBase();
 
         expect(await screen.findByRole('button', { name: /watch tutorial/i })).toBeInTheDocument();
-        expect(screen.queryByText(/video coming soon/i)).toBeNull();
+        expect(screen.queryByRole('button', { name: /video coming soon/i })).toBeNull();
     });
 
     it('fetches no video bytes until a player is opened', async () => {

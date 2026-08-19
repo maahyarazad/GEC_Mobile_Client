@@ -107,7 +107,7 @@ describe('Knowledge Base catalog rendering', () => {
         renderKnowledgeBase();
 
         await screen.findByText(KNOWLEDGE_BASE_ITEMS[0].title);
-        expect(screen.getAllByText(/video coming soon/i)).toHaveLength(KNOWLEDGE_BASE_ITEMS.length);
+        expect(screen.getAllByRole('button', { name: /video coming soon/i })).toHaveLength(KNOWLEDGE_BASE_ITEMS.length);
         expect(screen.queryByRole('button', { name: /watch tutorial/i })).toBeNull();
     });
 

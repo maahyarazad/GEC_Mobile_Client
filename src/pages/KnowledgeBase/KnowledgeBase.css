@@ -81,16 +81,12 @@
 .kb-card__watch.p-button {
     background: #F67D1D;
     border-color: #F67D1D;
-    white-space: nowrap;
 }
 
-.kb-card__coming-soon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
+/* Disabled icon button standing in for "no video yet". */
+.kb-card__coming-soon.p-button:disabled {
     color: #9ca3af;
-    font-size: 0.85rem;
-    white-space: nowrap;
+    opacity: 1;
 }
 
 .kb-dialog {
