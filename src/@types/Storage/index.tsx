@@ -7,7 +7,7 @@ export type StorageServiceType = {
     retrieveToken: () => (string | null);
     removeToken: () => void;
     removeRoles: () => void;
-    retrieveRoles: () => (IAdminRelease[]);
+    retrieveRoles: () => (IAdminRelease[] | null);
     hasPrivilege: (appId: number, role: string) => boolean;
 
     fetchPartnerCategories: () => void;

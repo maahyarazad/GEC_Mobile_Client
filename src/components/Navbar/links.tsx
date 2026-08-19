@@ -15,6 +15,7 @@ import {
   MdVerified,
   MdPersonSearch,
   MdAssignmentTurnedIn,
+  MdMenuBook,
   MdLogout,
 } from "react-icons/md";
 
@@ -107,6 +108,14 @@ export const links: INavbarLinks[] = [
     name: "Partner Onboarding",
     link: "/partner-onboarding",
     icon: MdAssignmentTurnedIn,
+  },
+  {
+    // No `id`: the Knowledge Base is visible to every authenticated admin
+    // (like Dashboard). Navbar hides any link whose `id` has no granted role,
+    // and this feature introduces no permission of its own.
+    name: "Knowledge Base",
+    link: "/knowledge-base",
+    icon: MdMenuBook,
   },
   {
     name: "Log Out",
