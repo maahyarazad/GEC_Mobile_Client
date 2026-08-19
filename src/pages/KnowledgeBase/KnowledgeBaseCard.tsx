@@ -1,40 +1,42 @@
 import React from 'react';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { KnowledgeBaseItem } from './types';
+import { IKnowledgeBaseEntry } from '../../@types/KnowledgeBase';
 
 interface Props {
-    item: KnowledgeBaseItem;
-    // False when the signed-in user's role denies the target screen, or while
-    // roles are still loading. Either way the control is disabled — see
-    // `permissionPending` for which message to show.
+    entry: IKnowledgeBaseEntry;
+    // False when the signed-in user's role denies the target screen, while
+    // roles are still loading, or when the entry has no quick-access route.
     permitted: boolean;
     permissionPending: boolean;
-    onWatch: (item: KnowledgeBaseItem) => void;
-    onQuickAccess: (item: KnowledgeBaseItem) => void;
+    onWatch: (entry: IKnowledgeBaseEntry) => void;
+    onQuickAccess: (entry: IKnowledgeBaseEntry) => void;
 }
 
 const KnowledgeBaseCard: React.FC<Props> = ({
-    item,
+    entry,
     permitted,
     permissionPending,
     onWatch,
     onQuickAccess,
 }) => {
-    const hasVideo = Boolean(item.videoUrl);
+    const hasVideo = entry.videoId !== null;
+    const hasQuickAccess = Boolean(entry.targetRoute);
 
     const quickAccessTitle = permitted
-        ? `Go to ${item.title.replace(/^How to (Read|Manage|Use|Work with) (the )?/i, '')}`
+        ? `Go to ${entry.title}`
         : permissionPending
             ? 'Checking your permissions…'
-            : 'You do not have permission to open this section';
+            : hasQuickAccess
+                ? 'You do not have permission to open this section'
+                : 'This tutorial has no linked section';
 
     return (
         <Card className='kb-card'>
             <div className='kb-card__body'>
                 <div className='kb-card__text'>
-                    <h2 className='kb-card__title'>{item.title}</h2>
-                    <p className='kb-card__description'>{item.description}</p>
+                    <h2 className='kb-card__title'>{entry.title}</h2>
+                    <p className='kb-card__description'>{entry.description}</p>
                 </div>
 
                 <div className='kb-card__actions'>
@@ -43,7 +45,7 @@ const KnowledgeBaseCard: React.FC<Props> = ({
                             className='kb-card__watch'
                             icon='pi pi-play'
                             label='Watch tutorial'
-                            onClick={() => onWatch(item)}
+                            onClick={() => onWatch(entry)}
                         />
                     ) : (
                         <span className='kb-card__coming-soon'>
@@ -57,9 +59,9 @@ const KnowledgeBaseCard: React.FC<Props> = ({
                         text
                         rounded
                         disabled={!permitted}
-                        aria-label={`Go to ${item.title}`}
+                        aria-label={`Go to ${entry.title}`}
                         title={quickAccessTitle}
-                        onClick={() => onQuickAccess(item)}
+                        onClick={() => onQuickAccess(entry)}
                     />
                 </div>
             </div>

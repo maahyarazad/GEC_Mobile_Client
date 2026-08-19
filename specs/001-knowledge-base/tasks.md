@@ -131,7 +131,20 @@ Single-project React SPA (see plan.md "Structure Decision"). All new code lives 
 - [ ] T035 Walk all nine validation scenarios in `specs/001-knowledge-base/quickstart.md` against a running `npm run dev`
 - [ ] T036 [P] Confirm the open question from research R7 with the product owner: `/category/partner` has no sidebar link of its own and is currently mapped to `targetAppId: 76` (*Partner List*). Correct the value in `src/pages/KnowledgeBase/knowledgeBaseItems.ts` if a different permission is intended
 - [ ] T037 [P] Obtain product owner sign-off on the six descriptions in `src/pages/KnowledgeBase/knowledgeBaseItems.ts` (flagged as required in `specs/001-knowledge-base/data-model.md`)
-- [ ] T038 [P] Confirm how tutorial video files will be hosted and set `videoUrl` on each entry in `src/pages/KnowledgeBase/knowledgeBaseItems.ts` as files become available. Note the existing uploader `src/pages/FilesPage/FileUploader.tsx` accepts `image/*` at a 10MB cap and cannot serve this today (research R2) — hosting is out of this feature's scope
+- [X] T038 [P] ~~Confirm how tutorial video files will be hosted~~ **Superseded.** A backend Knowledge Base API now exists (`/v2/knowledge-base`, `gec-node-admin/routes_v2/knowledgeBase/`). Entries and videos are served by it; the bundled catalog is now only an offline fallback. See "Backend integration" below.
+
+---
+
+## Phase 7: Backend Integration (added after `/v2/knowledge-base` shipped)
+
+**Context**: research R1/R2 chose a static catalog because no backend existed. One now does, with entry CRUD, categories, publish status, and an admin-only video stream. The screen reads from it; the static catalog is retained purely as an offline fallback.
+
+- [X] T039 Add API types in `src/@types/KnowledgeBase/index.ts` (`IKnowledgeBaseApiEntry`, `IKnowledgeBaseListData`, `IKnowledgeBaseEntry`, `KB_STATUS`) mirroring the controller's response shape
+- [X] T040 Add `src/services/KnowledgeBase/KnowledgeBase.service.ts` with `listPublishedEntries()` (GET `/v2/knowledge-base?status=1&limit=100`) and `fetchVideoObjectUrl(videoId)` (GET `/v2/knowledge-base/video/:videoId` as a blob), passing absolute v2 URLs through `axiosInstance` so the auth interceptor still applies
+- [X] T041 Fetch entries on mount in `src/pages/KnowledgeBase/KnowledgeBase.tsx`, with a loading spinner and a fallback to the bundled catalog plus a warning banner when the request fails
+- [X] T042 Play video from an authenticated blob object URL rather than a direct `src`, revoking the URL on dialog close, quick-access navigation, and unmount
+- [X] T043 Derive quick-access permissions from the server's `quick_access_path` via `APP_ID_BY_ROUTE` in `src/pages/KnowledgeBase/knowledgeBaseItems.ts`; disable quick access for an entry the server gave no route
+- [X] T044 Update all four suites in `src/pages/KnowledgeBase/__tests__/` to mock the service and assert the API-backed behaviour (31 tests)
 
 ---
 

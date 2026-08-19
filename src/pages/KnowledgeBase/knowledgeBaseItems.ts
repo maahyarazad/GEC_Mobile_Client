@@ -1,11 +1,14 @@
 import { KnowledgeBaseItem } from './types';
 
-// The Knowledge Base catalog. Static by design (see spec FR-004): editing a
-// description or attaching a video is a change to this file and nothing else.
+// Fallback Knowledge Base catalog.
 //
-// Array order is display order. `videoUrl` is deliberately absent until the
-// tutorial videos are produced — every entry renders a "coming soon" state
-// until then, which is the expected shipping state.
+// Entries normally come from GET /v2/knowledge-base. This bundled copy is what
+// the screen renders when that request fails, so an API outage degrades to the
+// six titles and descriptions rather than an empty page. It carries no videos —
+// video bytes only ever come from the server.
+//
+// It is also the source of the route → permission mapping below, which the API
+// has no concept of: quick-access gating is a frontend concern.
 export const KNOWLEDGE_BASE_ITEMS: readonly KnowledgeBaseItem[] = [
     {
         id: 'dashboard-report',
@@ -68,3 +71,15 @@ export const KNOWLEDGE_BASE_ITEMS: readonly KnowledgeBaseItem[] = [
         targetAppId: 88,
     },
 ];
+
+
+// Admin-panel route → the appId that governs it, derived from the catalog so
+// there is one place to change. API entries carry a quick_access_path but no
+// permission, so the screen looks the permission up here.
+export const APP_ID_BY_ROUTE: Readonly<Record<string, number>> = KNOWLEDGE_BASE_ITEMS.reduce(
+    (map, item) => {
+        if (item.targetAppId !== undefined) map[item.targetRoute] = item.targetAppId;
+        return map;
+    },
+    {} as Record<string, number>,
+);
